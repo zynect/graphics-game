@@ -3,11 +3,11 @@
 
 /*
  * For students:
- * 
+ *
  * This file defines RenderPass class and its associated classes.
  * RenderPass is used to simplify multi-pass rendering code in the
  * reference solution.
- * 
+ *
  * However, understanding this class is COMPLETELY OPTIONAL.
  * It's totally OK to ignore this class and cram a bunch of OpenGL
  * function calls in your solution.
@@ -17,7 +17,7 @@
 #include <string>
 #include <map>
 #include <functional>
-#include <material.h>
+#include "material.h"
 
 /*
  * ShaderUniform: description of a uniform in a shader program.
@@ -36,7 +36,7 @@ struct ShaderUniform {
 	/*
 	 * data_source:
 	 *      return: the pointer to the uniform data
-	 *      
+	 *
 	 * Hint: DON'T DO THIS
 	 *       data_source = []() -> void* { float value = 1.0f; return &f; };
 	 *       the value variable will become invalid after returning from
@@ -56,7 +56,7 @@ struct RenderInputMeta {
 	size_t element_length = 0;
 	int element_type = 0;
 
-	size_t getElementSize() const; // simple check: return 12 (3 * 4 bytes) for float3 
+	size_t getElementSize() const; // simple check: return 12 (3 * 4 bytes) for float3
 	RenderInputMeta();
 	RenderInputMeta(int _position,
 	            const std::string& _name,
@@ -75,7 +75,7 @@ public:
 
 	/*
 	 * assign: assign buffer
-	 *      position: glVertexAttribPointer position 
+	 *      position: glVertexAttribPointer position
 	 *      name: glBindAttribLocation name
 	 *      nelements: number of elements
 	 *      element_length: element dimension, e.g. for vec3 it's 3
@@ -128,7 +128,7 @@ public:
 	 */
 	RenderPass(int vao, // -1: create new VAO, otherwise use given VAO
 	           const RenderDataInput& input,
-	           const std::vector<const char*> shaders, // Order: VS, GS, FS 
+	           const std::vector<const char*> shaders, // Order: VS, GS, FS
 	           const std::vector<ShaderUniform> uniforms,
 	           const std::vector<const char*> output // Order: 0, 1, 2...
 		  );
@@ -140,7 +140,7 @@ public:
 	/*
  	 * Note: here we don't have an unified render() function, because the
 	 * reference solution renders with different primitives
-	 * 
+	 *
 	 * However you can freely trianglize everything and add an
 	 * render() function
 	 */
@@ -164,7 +164,7 @@ private:
 	unsigned sampler2d_;
 	unsigned vs_ = 0, gs_ = 0, fs_ = 0;
 	unsigned sp_ = 0;
-	
+
 	static unsigned compileShader(const char*, int type);
 	static std::map<const char*, unsigned> shader_cache_;
 
