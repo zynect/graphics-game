@@ -35,5 +35,20 @@ int main(int argc, char* argv[])
 	CHECK_SUCCESS(window != nullptr);
 	glfwMakeContextCurrent(window);
 
-	while(1);
+	while (!glfwWindowShouldClose(window)) {
+		// Setup some basic window stuff.
+		glfwGetFramebufferSize(window, &window_width, &window_height);
+		glViewport(0, 0, window_width, window_height);
+		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		glEnable(GL_DEPTH_TEST);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glDepthFunc(GL_LESS);
+
+		// Poll and swap.
+		glfwPollEvents();
+		glfwSwapBuffers(window);
+	}
+	glfwDestroyWindow(window);
+	glfwTerminate();
+	exit(EXIT_SUCCESS);
 }
