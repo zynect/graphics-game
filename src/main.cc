@@ -11,6 +11,17 @@
 using namespace std;
 
 int window_width = 800, window_height = 600;
+const char* vertex_shader =
+#include "shaders/default.vert"
+;
+
+const char* geometry_shader =
+#include "shaders/default.geom"
+;
+
+const char* fragment_shader =
+#include "shaders/default.frag"
+;
 
 void
 ErrorCallback(int error, const char* description)
@@ -34,6 +45,8 @@ int main(int argc, char* argv[])
 			&window_title[0], nullptr, nullptr);
 	CHECK_SUCCESS(window != nullptr);
 	glfwMakeContextCurrent(window);
+
+
 
 	while (!glfwWindowShouldClose(window)) {
 		// Setup some basic window stuff.
