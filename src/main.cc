@@ -7,6 +7,8 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
+
 #include "gui.h"
 
 using namespace std;
@@ -14,15 +16,15 @@ using namespace std;
 const string window_title = "Game";
 int window_width = 800, window_height = 600;
 const char* vertex_shader =
-#include "shaders/default.vert"
+#include "shaders/red.vert"
 ;
 
 const char* geometry_shader =
-#include "shaders/default.geom"
+#include "shaders/red.geom"
 ;
 
 const char* fragment_shader =
-#include "shaders/default.frag"
+#include "shaders/red.frag"
 ;
 
 void
@@ -64,7 +66,57 @@ int main(int argc, char* argv[])
 	GUI gui(window);
 	glfwMakeContextCurrent(window);
 
+	vector<glm::vec4> triangles;
+	triangles.push_back({-1.0f, -1.0f, 0.0f, 1.0f});
+	triangles.push_back({-1.0f, 1.0f, 0.0f, 1.0f});
+	triangles.push_back({1.0f, -1.0f, 0.0f, 1.0f});
+	triangles.push_back({1.0f, 1.0f, 0.0f, 1.0f});
 
+	vector<glm::uvec3> faces;
+	faces.push_back({0, 1, 2});
+	faces.push_back({1, 2, 3});
+
+	MatrixPointers mats = gui.getMatrixPointers();
+
+	auto matrix_binder = [](int loc, const void* data) {
+		glUniformMatrix4fv(loc, 1, GL_FALSE, (const GLfloat*)data);
+	};
+
+	auto vector3_binder = [](int loc, const void* data) {
+		glUniform3fv(loc, 1, (const GLfloat*)data);
+	};
+
+	auto std_view_data = [&mats]() -> const void* {
+		return mats.view;
+	};
+	auto std_camera_data  = [&gui]() -> const void* {
+		return &gui.getCamera()[0];
+	};
+	auto std_proj_data = [&mats]() -> const void* {
+		return mats.projection;
+	};
+
+	ShaderUniform std_view = { "view", matrix_binder, std_view_data };
+	ShaderUniform std_camera = { "camera_position", vector3_binder, std_camera_data };
+	ShaderUniform std_proj = { "projection", matrix_binder, std_proj_data };
+
+	RenderDataInput object_pass_input;
+	object_pass_input.assign(0, "vertex_position", triangles.data(), triangles.size(), 4, GL_FLOAT);
+	//object_pass_input.assign(1, "normal", mesh.vertex_normals.data(), mesh.vertex_normals.size(), 4, GL_FLOAT);
+	//object_pass_input.assign(2, "uv", uv_coordinates.data(), uv_coordinates.size(), 2, GL_FLOAT);
+	object_pass_input.assign_index(faces.data(), faces.size(), 3);
+	//object_pass_input.useMaterials(mesh.materials);
+	RenderPass object_pass(-1,
+			object_pass_input,
+			{
+			  vertex_shader,
+			  geometry_shader,
+			  fragment_shader
+			},
+			{ std_view, std_proj,
+			  std_camera },
+			{ "fragment_color" }
+			);
 
 	while (!glfwWindowShouldClose(window)) {
 		// Setup some basic window stuff.
@@ -76,6 +128,9 @@ int main(int argc, char* argv[])
 		glDepthFunc(GL_LESS);
 
 		gui.updateMatrices();
+
+		object_pass.setup();
+		CHECK_GL_ERROR(glDrawElements(GL_TRIANGLES, faces.size() * 3, GL_UNSIGNED_INT, 0));
 		
 		// Poll and swap.
 		glfwPollEvents();

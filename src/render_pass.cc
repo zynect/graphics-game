@@ -1,5 +1,4 @@
 #include <GL/glew.h>
-#include <GLFW/glfw3.h>
 #include <render_pass.h>
 #include <iostream>
 #include <debuggl.h>
@@ -266,7 +265,7 @@ void RenderPass::setup()
 
 bool RenderPass::renderWithMaterial(int mid)
 {
-	if ((size_t)mid >= material_uniforms_.size() || mid < 0)
+	if (mid >= material_uniforms_.size() || mid < 0)
 		return false;
 	const auto& mat = input_.getMaterial(mid);
 #if 0
