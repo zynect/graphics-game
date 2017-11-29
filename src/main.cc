@@ -19,10 +19,6 @@ const char* vertex_shader =
 #include "shaders/red.vert"
 ;
 
-const char* geometry_shader =
-#include "shaders/red.geom"
-;
-
 const char* fragment_shader =
 #include "shaders/red.frag"
 ;
@@ -67,13 +63,13 @@ int main(int argc, char* argv[])
 	glfwMakeContextCurrent(window);
 
 	vector<glm::vec4> triangles;
-	triangles.push_back({-1.0f, -1.0f, 0.0f, 1.0f});
-	triangles.push_back({-1.0f, 1.0f, 0.0f, 1.0f});
-	triangles.push_back({1.0f, -1.0f, 0.0f, 1.0f});
+	triangles.push_back({0.0f, 0.0f, 0.0f, 1.0f});
+	triangles.push_back({0.0f, 1.0f, 0.0f, 1.0f});
+	triangles.push_back({1.0f, 0.0f, 0.0f, 1.0f});
 	triangles.push_back({1.0f, 1.0f, 0.0f, 1.0f});
 
 	vector<glm::uvec3> faces;
-	faces.push_back({0, 1, 2});
+	faces.push_back({0, 2, 1});
 	faces.push_back({1, 2, 3});
 
 	MatrixPointers mats = gui.getMatrixPointers();
@@ -110,7 +106,7 @@ int main(int argc, char* argv[])
 			object_pass_input,
 			{
 			  vertex_shader,
-			  geometry_shader,
+			  nullptr,
 			  fragment_shader
 			},
 			{ std_view, std_proj,
@@ -119,11 +115,9 @@ int main(int argc, char* argv[])
 			);
 
 	while (!glfwWindowShouldClose(window)) {
-		// Setup some basic window stuff.
 		glfwGetFramebufferSize(window, &window_width, &window_height);
 		glViewport(0, 0, window_width, window_height);
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-		glEnable(GL_DEPTH_TEST);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glDepthFunc(GL_LESS);
 

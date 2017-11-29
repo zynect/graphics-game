@@ -5,9 +5,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
 
-const float kNear = 0.1f;
-const float kFar = 1000.0f;
-const float kFov = 45.0f;
+// const float kNear = 0.1f;
+// const float kFar = 1000.0f;
+// const float kFov = 45.0f;
 
 GUI::GUI(GLFWwindow* window)
 	:window_(window)
@@ -19,7 +19,7 @@ GUI::GUI(GLFWwindow* window)
 
 	glfwGetWindowSize(window_, &window_width_, &window_height_);
 	float aspect_ = static_cast<float>(window_width_) / window_height_;
-	projection_matrix_ = glm::perspective((float)(kFov * (M_PI / 180.0f)), aspect_, kNear, kFar);
+	projection_matrix_ = glm::ortho(0, window_width_, window_height_, 0);
 }
 
 GUI::~GUI()
@@ -69,12 +69,12 @@ void GUI::updateMatrices()
 	else*/
 	eye_ = center_ - camera_distance_ * look_;
 
-	view_matrix_ = glm::lookAt(eye_, center_, up_);
+	view_matrix_ = ;
 	light_position_ = glm::vec4(eye_, 1.0f);
 
 	aspect_ = static_cast<float>(window_width_) / window_height_;
 	projection_matrix_ =
-		glm::perspective((float)(kFov * (M_PI / 180.0f)), aspect_, kNear, kFar);
+		glm::ortho(0, window_width_, window_height_, 0);
 	model_matrix_ = glm::mat4(1.0f);
 }
 
