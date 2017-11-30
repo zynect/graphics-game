@@ -14,7 +14,7 @@
 using namespace std;
 
 const string window_title = "Game";
-int window_width = 800, window_height = 600;
+const int initial_window_width = 800, initial_window_height = 600;
 const char* vertex_shader =
 #include "shaders/red.vert"
 ;
@@ -39,7 +39,7 @@ GLFWwindow* init_glefw()
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_SAMPLES, 4);
-	auto ret = glfwCreateWindow(window_width, window_height, window_title.data(), nullptr, nullptr);
+	auto ret = glfwCreateWindow(initial_window_width, initial_window_height, window_title.data(), nullptr, nullptr);
 	CHECK_SUCCESS(ret != nullptr);
 	glfwMakeContextCurrent(ret);
 	glewExperimental = GL_TRUE;
@@ -64,13 +64,13 @@ int main(int argc, char* argv[])
 
 	vector<glm::vec4> triangles;
 	triangles.push_back({0.0f, 0.0f, 0.0f, 1.0f});
-	triangles.push_back({0.0f, 1.0f, 0.0f, 1.0f});
-	triangles.push_back({1.0f, 0.0f, 0.0f, 1.0f});
-	triangles.push_back({1.0f, 1.0f, 0.0f, 1.0f});
+	triangles.push_back({100.0f, 0.0f, 0.0f, 1.0f});
+	triangles.push_back({0.0f, 100.0f, 0.0f, 1.0f});
+	triangles.push_back({100.0f, 100.0f, 0.0f, 1.0f});
 
 	vector<glm::uvec3> faces;
-	faces.push_back({0, 2, 1});
-	faces.push_back({1, 2, 3});
+	faces.push_back({0, 1, 2});
+	faces.push_back({2, 1, 3});
 
 	MatrixPointers mats = gui.getMatrixPointers();
 
@@ -82,18 +82,19 @@ int main(int argc, char* argv[])
 		glUniform3fv(loc, 1, (const GLfloat*)data);
 	};
 
+	auto std_model_data = [&mats]() -> const void* {
+		return mats.model;
+	}; // This returns point to model matrix
 	auto std_view_data = [&mats]() -> const void* {
 		return mats.view;
-	};
-	auto std_camera_data  = [&gui]() -> const void* {
-		return &gui.getCamera()[0];
 	};
 	auto std_proj_data = [&mats]() -> const void* {
 		return mats.projection;
 	};
 
+	ShaderUniform std_model = { "model", matrix_binder, std_model_data };
 	ShaderUniform std_view = { "view", matrix_binder, std_view_data };
-	ShaderUniform std_camera = { "camera_position", vector3_binder, std_camera_data };
+	//ShaderUniform std_camera = { "camera_position", vector3_binder, std_camera_data };
 	ShaderUniform std_proj = { "projection", matrix_binder, std_proj_data };
 
 	RenderDataInput object_pass_input;
@@ -109,23 +110,16 @@ int main(int argc, char* argv[])
 			  nullptr,
 			  fragment_shader
 			},
-			{ std_view, std_proj,
-			  std_camera },
+			{ std_model, std_view, std_proj },
 			{ "fragment_color" }
 			);
 
 	while (!glfwWindowShouldClose(window)) {
-		glfwGetFramebufferSize(window, &window_width, &window_height);
-		glViewport(0, 0, window_width, window_height);
-		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glDepthFunc(GL_LESS);
-
-		gui.updateMatrices();
+		gui.updateLoop();
 
 		object_pass.setup();
 		CHECK_GL_ERROR(glDrawElements(GL_TRIANGLES, faces.size() * 3, GL_UNSIGNED_INT, 0));
-		
+
 		// Poll and swap.
 		glfwPollEvents();
 		glfwSwapBuffers(window);

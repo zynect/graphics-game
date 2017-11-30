@@ -17,7 +17,7 @@ GUI::GUI(GLFWwindow* window)
 	glfwSetCursorPosCallback(window_, MousePosCallback);
 	glfwSetMouseButtonCallback(window_, MouseButtonCallback);
 
-	glfwGetWindowSize(window_, &window_width_, &window_height_);
+	//glfwGetWindowSize(window_, &window_width_, &window_height_);
 	float aspect_ = static_cast<float>(window_width_) / window_height_;
 	projection_matrix_ = glm::ortho(0, window_width_, window_height_, 0);
 }
@@ -26,6 +26,16 @@ GUI::~GUI()
 {
 }
 
+void GUI::updateLoop()
+{
+	glfwGetFramebufferSize(window_, &window_width_, &window_height_);
+	glViewport(0, 0, window_width_, window_height_);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glDepthFunc(GL_LESS);
+
+	updateMatrices();
+}
 
 void GUI::keyCallback(int key, int scancode, int action, int mods)
 {
@@ -67,15 +77,19 @@ void GUI::updateMatrices()
 	/*if (fps_mode_)
 		center_ = eye_ + camera_distance_ * look_;
 	else*/
-	eye_ = center_ - camera_distance_ * look_;
+	//eye_ = center_ - camera_distance_ * look_;
 
-	view_matrix_ = ;
-	light_position_ = glm::vec4(eye_, 1.0f);
+	view_matrix_ = glm::mat4(1.0f);
+	view_matrix_[3].x = camera_position_.x;
+	view_matrix_[3].y = camera_position_.y;
+	view_matrix_[3].z = camera_distance_;
+	//light_position_ = glm::vec4(eye_, 1.0f);
 
 	aspect_ = static_cast<float>(window_width_) / window_height_;
-	projection_matrix_ =
-		glm::ortho(0, window_width_, window_height_, 0);
+	projection_matrix_ = glm::ortho(0.0f, static_cast<float>(window_width_), static_cast<float>(window_height_), 0.0f);
+	//projection_matrix_ = glm::perspective(60.0f, (float)window_width_ / (float)window_height_, 0.1f, 100.0f);
 	model_matrix_ = glm::mat4(1.0f);
+	glm::mat4 mvp = model_matrix_ * view_matrix_ * projection_matrix_;
 }
 
 MatrixPointers GUI::getMatrixPointers() const
