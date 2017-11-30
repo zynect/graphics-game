@@ -5,6 +5,14 @@
 
 const float gravity = 9.81;
 const float maxYVelocity = 10;
+const
+enum movement {
+  NONE,
+  LEFT,
+  RIGHT,
+  UP,
+  DOWN
+};
 
 class GameObject {
 public:
@@ -28,7 +36,7 @@ private:
   bool isResting;
 
   void checkCollision();
-  void updateVelocity();
+  void updateVelocity(double deltaTime, char key);
 };
 
 #endif
