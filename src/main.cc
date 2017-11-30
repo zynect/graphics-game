@@ -113,8 +113,21 @@ int main(int argc, char* argv[])
 			{ std_model, std_view, std_proj },
 			{ "fragment_color" }
 			);
+	
+	double lastTime = glfwGetTime();
+	int nbFrames = 0;
 
 	while (!glfwWindowShouldClose(window)) {
+		// Measure speed
+		double currentTime = glfwGetTime();
+		nbFrames++;
+		if ( currentTime - lastTime >= 1.0 ){ // If last prinf() was more than 1 sec ago
+			// printf and reset timer
+			//printf("%f ms/frame\n", 1000.0/double(nbFrames));
+			printf("%d FPS\n", nbFrames);
+			nbFrames = 0;
+			lastTime += 1.0;
+		}
 		gui.updateLoop();
 
 		object_pass.setup();
