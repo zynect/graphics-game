@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "gui.h"
+#include "gameObject.h"
 
 using namespace std;
 
@@ -56,11 +57,12 @@ GLFWwindow* init_glefw()
 
 int main(int argc, char* argv[])
 {
-
 	GLFWwindow *window = init_glefw();
 	CHECK_SUCCESS(window != nullptr);
 	GUI gui(window);
 	glfwMakeContextCurrent(window);
+
+	vector<GameObject> objects;
 
 	vector<glm::vec4> triangles;
 	triangles.push_back({0.0f, 0.0f, 0.0f, 1.0f});
@@ -84,7 +86,7 @@ int main(int argc, char* argv[])
 
 	auto std_model_data = [&mats]() -> const void* {
 		return mats.model;
-	}; // This returns point to model matrix
+	};
 	auto std_view_data = [&mats]() -> const void* {
 		return mats.view;
 	};
