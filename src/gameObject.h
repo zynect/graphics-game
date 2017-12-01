@@ -28,7 +28,7 @@ public:
 
 protected:
 	glm::vec2 position;
-	struct order{
+	struct {
 		unsigned int textureId:28;
 		unsigned int zIndex:4;
 	} key;

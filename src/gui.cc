@@ -42,17 +42,19 @@ void GUI::keyCallback(int key, int scancode, int action, int mods)
 		return;
 	}
 
+	cout << key << ' ' << action << endl;
+
 	/*if (key == GLFW_KEY_W) {
 	} else if (key == GLFW_KEY_S) {
 	} else*/
-	if (key == GLFW_KEY_A) {
+	if (key == GLFW_KEY_LEFT) {
 		if (action == GLFW_RELEASE) {
 			activeAction = NONE;
 		} else {
 			activeAction = LEFT;
 		}
 	}
-	else if (key == GLFW_KEY_D) {
+	else if (key == GLFW_KEY_RIGHT) {
 		if (action == GLFW_RELEASE) {
 			activeAction = NONE;
 		} else {
@@ -99,7 +101,6 @@ void GUI::updateMatrices()
 	projection_matrix_ = glm::ortho(0.0f, static_cast<float>(window_width_), static_cast<float>(window_height_), 0.0f);
 	//projection_matrix_ = glm::perspective(60.0f, (float)window_width_ / (float)window_height_, 0.1f, 100.0f);
 	model_matrix_ = glm::mat4(1.0f);
-	glm::mat4 mvp = model_matrix_ * view_matrix_ * projection_matrix_;
 }
 
 MatrixPointers GUI::getMatrixPointers() const
