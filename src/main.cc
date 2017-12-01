@@ -152,24 +152,17 @@ int main(int argc, char* argv[])
 	MatrixPointers mats = gui.getMatrixPointers();
 
 	double lastTime = glfwGetTime();
-	int nbFrames = 0;
 	double deltaTime = 0;
 
-	auto player = make_shared<Player>(glm::vec2(400, 300), 100, 200);
+	auto player = make_shared<Player>(glm::vec2(400, 300), 0, glm::vec2(100, 200));
 	objects.push_back(player);
 
 	while (!glfwWindowShouldClose(window)) {
 		// Measure speed
 		double currentTime = glfwGetTime();
-		nbFrames++;
 		deltaTime = currentTime - lastTime;
-		if (deltaTime >= 1.0 ){
-			// printf and reset timer
-			//printf("%f ms/frame\n", 1000.0/double(nbFrames));
-			printf("%d FPS\n", nbFrames);
-			nbFrames = 0;
-			lastTime += 1.0;
-		}
+		lastTime = currentTime;
+
 		gui.updateLoop();
 
 		// Use our program.
@@ -186,12 +179,16 @@ int main(int argc, char* argv[])
 			obj->run(deltaTime);
 
 			glm::mat4 model = *reinterpret_cast<const glm::mat4*>(mats.model);
-			model[3].x = obj->position.x;
-			model[3].y = obj->position.y;
 
-			// rotate here if necessary
+			glm::vec2 center = obj->size / 2.0f;
 
-			model *= glm::scale(glm::vec3(obj->width, obj->height, 1.0f));
+			model *= glm::translate(glm::vec3(obj->position + center, obj->zIndex));
+
+			model *= glm::rotate(obj->angle, glm::vec3(0.0f, 0.0f, 1.0f));
+
+			model *= glm::translate(glm::vec3(-center, 0.0f));
+
+			model *= glm::scale(glm::vec3(obj->size, 1.0f));
 
 			CHECK_GL_ERROR(glUniformMatrix4fv(model_matrix_location, 1, GL_FALSE,
 						&model[0][0]));
@@ -203,7 +200,7 @@ int main(int argc, char* argv[])
 		glfwPollEvents();
 		glfwSwapBuffers(window);
 	}
-	
+
 	glfwDestroyWindow(window);
 	glfwTerminate();
 	exit(EXIT_SUCCESS);

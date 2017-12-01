@@ -1,13 +1,14 @@
 #include "gameObject.h"
 
-void Player::run(double deltaTime)
+void GameObject::checkCollision()
 {
-	updateVelocity(deltaTime, NONE);
+
 }
 
-void Player::checkCollision()
+void Player::run(double deltaTime)
 {
-
+	//updateVelocity(deltaTime, NONE);
+	angle += deltaTime * 10.0f;
 }
 
 void Player::updateVelocity(double deltaTime, int move)
@@ -27,17 +28,9 @@ void Player::updateVelocity(double deltaTime, int move)
 	}
 
 	//Gravity
-	if(!isResting)
+	if(!isResting && velocity.y < maxYVelocity)
 	{
-		if(velocity.y < maxYVelocity)
-		{
-			//position.y += (velocity.y * deltaTime) + (.5 * gravity * deltaTime * deltaTime);
-			velocity.y += gravity * dt;
-		}
-		/*else
-		{
-			position.y += velocity.y * deltaTime;
-		}*/
+		velocity.y += gravity * dt;
 	}
 
 	position += velocity * dt;
