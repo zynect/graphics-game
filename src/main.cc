@@ -3,13 +3,12 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <debuggl.h>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/transform.hpp>
 
 #include <iostream>
 #include <string>
 #include <vector>
 #include <memory>
+#include <algorithm>
 
 #include "gui.h"
 #include "gameObject.h"
@@ -154,11 +153,11 @@ int main(int argc, char* argv[])
 	double lastTime = glfwGetTime();
 	double deltaTime = 0;
 
-	objects.push_back(make_shared<Player>(glm::vec2(400, 300), 0, glm::vec2(100, 200)));
+	objects.push_back(make_shared<Player>(glm::vec2(400, 300), 0, glm::vec2(100, 200), 0));
 
 	for (int i = 0; i < 1000; i++)
 	{
-		objects.push_back(make_shared<Enemy>(glm::vec2((i * 20) % 800, ((i * 20) / 800) * 20), 0, glm::vec2(10, 10)));
+		objects.push_back(make_shared<Enemy>(glm::vec2((i * 20) % 800, ((i * 20) / 800) * 20), 0, glm::vec2(10, 10), 0));
 	}
 
 	while (!glfwWindowShouldClose(window)) {
@@ -181,20 +180,13 @@ int main(int argc, char* argv[])
 		for(shared_ptr<GameObject> obj : objects)
 		{
 			obj->run(deltaTime);
+		}
 
-			glm::mat4 model = *reinterpret_cast<const glm::mat4*>(mats.model);
-			glm::vec2 center = obj->size / 2.0f;
-
-			// read these comments bottom to top
-
-			// and finally, translate it to the proper place
-			model *= glm::translate(glm::vec3(obj->position + center, obj->zIndex));
-			// rotate the object
-			model *= glm::rotate(obj->angle, glm::vec3(0.0f, 0.0f, 1.0f));
-			// move the center of the object to (0,0)
-			model *= glm::translate(glm::vec3(-center, 0.0f));
-			// scale the object to the right size
-			model *= glm::scale(glm::vec3(obj->size, 1.0f));
+		sort(objects.begin(), objects.end());
+		
+		for(shared_ptr<GameObject> obj : objects)
+		{
+			glm::mat4 model = *reinterpret_cast<const glm::mat4*>(mats.model) * obj->modelMatrix();
 
 			CHECK_GL_ERROR(glUniformMatrix4fv(model_matrix_location, 1, GL_FALSE,
 						&model[0][0]));

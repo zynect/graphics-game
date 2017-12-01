@@ -19,12 +19,19 @@ extern bool isJumping;
 class GameObject {
 public:
 	GameObject() = delete;
-	GameObject(glm::vec2 pos, int z, glm::vec2 s) : position(pos), zIndex(z), size(s), angle() {};
+	GameObject(glm::vec2 pos, unsigned int z, glm::vec2 s, unsigned int id, float a = 0.0f) : position(pos), size(s), angle(), key({.textureId = id, .zIndex = z}) {};
 	~GameObject() {};
 	virtual void run(double deltaTime) = 0;
+	glm::mat4 modelMatrix();
 
+	bool operator < (const GameObject& obj) const;
+
+protected:
 	glm::vec2 position;
-	int zIndex;
+	struct order{
+		unsigned int textureId:28;
+		unsigned int zIndex:4;
+	} key;
 	glm::vec2 size;
 	float angle;
 };
@@ -32,7 +39,7 @@ public:
 class Entity : public GameObject {
 public:
 	Entity() = delete;
-	Entity(glm::vec2 pos, int z, glm::vec2 s) : GameObject(pos, z, s), velocity(), isResting(false) {};
+	Entity(glm::vec2 pos, unsigned int z, glm::vec2 s, unsigned int id, float a = 0.0f) : GameObject(pos, z, s, id, a), velocity(), isResting(false) {};
 	~Entity() {};
 	virtual void run(double deltaTime) = 0;
 
@@ -49,7 +56,7 @@ protected:
 class Player : public Entity {
 public:
 	Player() = delete;
-	Player(glm::vec2 pos, int z, glm::vec2 s) : Entity(pos, z, s) {};
+	Player(glm::vec2 pos, unsigned int z, glm::vec2 s, unsigned int id, float a = 0.0f) : Entity(pos, z, s, id, a) {};
 	~Player() {};
 	void run(double deltaTime);
 
@@ -60,7 +67,7 @@ private:
 class Enemy : public Entity {
 public:
 	Enemy() = delete;
-	Enemy(glm::vec2 pos, int z, glm::vec2 s) : Entity(pos, z, s) {};
+	Enemy(glm::vec2 pos, unsigned int z, glm::vec2 s, unsigned int id, float a = 0.0f) : Entity(pos, z, s, id, a) {};
 	~Enemy() {};
 	void run(double deltaTime);
 
