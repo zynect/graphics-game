@@ -5,6 +5,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <GLFW/glfw3.h>
 
+#include "gameObject.h"
+
 /*
  * Hint: call glUniformMatrix4fv on thest pointers
  */

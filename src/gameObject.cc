@@ -1,5 +1,9 @@
 #include "gameObject.h"
 
+int activeAction = NONE;
+bool isRunning = false;
+bool isJumping = false;
+
 void Entity::calcGravity(double deltaTime)
 {
 	float dt = static_cast<float>(deltaTime);
@@ -7,7 +11,6 @@ void Entity::calcGravity(double deltaTime)
 	{
 		velocity.y += gravity * dt;
 	}
-
 }
 
 void Entity::checkCollision()
@@ -23,7 +26,7 @@ void Entity::checkCollision()
 
 void Player::run(double deltaTime)
 {
-	updatePosition(deltaTime, NONE);
+	updatePosition(deltaTime, activeAction);
 }
 
 void Player::updatePosition(double deltaTime, int move)
@@ -32,15 +35,15 @@ void Player::updatePosition(double deltaTime, int move)
 
 	if (move == LEFT)
 	{
-		velocity.x = -100;
+		velocity.x = -500;
 	}
 	else if (move == RIGHT)
 	{
-		velocity.x = 100;
+		velocity.x = 500;
 	}
 	else //No movement
 	{
-
+		velocity.x = 0;
 	}
 
 	calcGravity(deltaTime);

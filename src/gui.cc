@@ -5,9 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
 
-// const float kNear = 0.1f;
-// const float kFar = 1000.0f;
-// const float kFov = 45.0f;
+using namespace std;
 
 GUI::GUI(GLFWwindow* window)
 	:window_(window)
@@ -44,10 +42,22 @@ void GUI::keyCallback(int key, int scancode, int action, int mods)
 		return;
 	}
 
-	if (key == GLFW_KEY_W) {
+	/*if (key == GLFW_KEY_W) {
 	} else if (key == GLFW_KEY_S) {
-	} else if (key == GLFW_KEY_A) {
-	} else if (key == GLFW_KEY_D) {
+	} else*/
+	if (key == GLFW_KEY_A) {
+		if (action == GLFW_RELEASE) {
+			activeAction = NONE;
+		} else {
+			activeAction = LEFT;
+		}
+	}
+	else if (key == GLFW_KEY_D) {
+		if (action == GLFW_RELEASE) {
+			activeAction = NONE;
+		} else {
+			activeAction = RIGHT;
+		}
 	}
 }
 

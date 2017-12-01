@@ -6,13 +6,15 @@
 const float gravity = 981;
 const float maxYVelocity = 1000;
 const float horizAccel = 1;
-enum movement {
+enum actions {
 	NONE,
 	LEFT,
-	RIGHT,
-	UP,
-	DOWN
+	RIGHT
 };
+
+extern int activeAction;
+extern bool isRunning;
+extern bool isJumping;
 
 class GameObject {
 public:
@@ -38,7 +40,7 @@ protected:
 	glm::vec2 velocity;
 	bool isResting;
 
-	virtual void updatePosition(double deltaTime, int key) = 0;
+	virtual void updatePosition(double deltaTime, int move) = 0;
 
 	void checkCollision();
 	void calcGravity(double deltaTime);
@@ -52,7 +54,7 @@ public:
 	void run(double deltaTime);
 
 private:
-	void updatePosition(double deltaTime, int key);
+	void updatePosition(double deltaTime, int move);
 };
 
 class Enemy : public Entity {
@@ -63,7 +65,7 @@ public:
 	void run(double deltaTime);
 
 private:
-	void updatePosition(double deltaTime, int key);
+	void updatePosition(double deltaTime, int move);
 };
 
 #endif
