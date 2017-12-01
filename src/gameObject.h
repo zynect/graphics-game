@@ -17,11 +17,9 @@ enum movement {
 class GameObject {
 public:
 	GameObject() = delete;
-	GameObject(glm::vec2 pos, int z, glm::vec2 s) : position(pos), zIndex(z), size(s) {};
+	GameObject(glm::vec2 pos, int z, glm::vec2 s) : position(pos), zIndex(z), size(s), angle() {};
 	~GameObject() {};
-
 	virtual void run(double deltaTime) = 0;
-	void checkCollision();
 
 	glm::vec2 position;
 	int zIndex;
@@ -29,25 +27,43 @@ public:
 	float angle;
 };
 
-class Player : public GameObject {
+class Entity : public GameObject {
 public:
-	Player() = delete;
-	Player(glm::vec2 pos, int z, glm::vec2 s) : GameObject(pos, z, s), velocity(), isResting(false) {};
-	~Player() {};
-	virtual void run(double deltaTime);
-private:
+	Entity() = delete;
+	Entity(glm::vec2 pos, int z, glm::vec2 s) : GameObject(pos, z, s), velocity(), isResting(false) {};
+	~Entity() {};
+	virtual void run(double deltaTime) = 0;
+
+protected:
 	glm::vec2 velocity;
 	bool isResting;
 
-	void updateVelocity(double deltaTime, int key);
+	virtual void updatePosition(double deltaTime, int key) = 0;
+
+	void checkCollision();
+	void calcGravity(double deltaTime);
 };
 
-class Enemy : public GameObject {
+class Player : public Entity {
+public:
+	Player() = delete;
+	Player(glm::vec2 pos, int z, glm::vec2 s) : Entity(pos, z, s) {};
+	~Player() {};
+	void run(double deltaTime);
+
+private:
+	void updatePosition(double deltaTime, int key);
+};
+
+class Enemy : public Entity {
 public:
 	Enemy() = delete;
-	Enemy(glm::vec2 pos, int z, glm::vec2 s) : GameObject(pos, z, s) {};
+	Enemy(glm::vec2 pos, int z, glm::vec2 s) : Entity(pos, z, s) {};
 	~Enemy() {};
-	virtual void run(double deltaTime);
+	void run(double deltaTime);
+
+private:
+	void updatePosition(double deltaTime, int key);
 };
 
 #endif

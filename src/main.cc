@@ -155,7 +155,11 @@ int main(int argc, char* argv[])
 	double deltaTime = 0;
 
 	objects.push_back(make_shared<Player>(glm::vec2(400, 300), 0, glm::vec2(100, 200)));
-	objects.push_back(make_shared<Enemy>(glm::vec2(200, 200), 0, glm::vec2(100, 100)));
+
+	for (int i = 0; i < 1000; i++)
+	{
+		objects.push_back(make_shared<Enemy>(glm::vec2((i * 20) % 800, ((i * 20) / 800) * 20), 0, glm::vec2(10, 10)));
+	}
 
 	while (!glfwWindowShouldClose(window)) {
 		// Measure speed
