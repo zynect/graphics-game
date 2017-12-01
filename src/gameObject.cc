@@ -1,4 +1,29 @@
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/transform.hpp>
 #include "gameObject.h"
+
+glm::mat4 GameObject::modelMatrix()
+{
+	glm::vec2 center = size / 2.0f;
+
+	// read these comments bottom to top
+
+	// and finally, translate it to the proper place
+	glm::mat4 model = glm::translate(glm::vec3(position + center, 0.0f));
+	// rotate the object
+	model *= glm::rotate(angle, glm::vec3(0.0f, 0.0f, 1.0f));
+	// move the center of the object to (0,0)
+	model *= glm::translate(glm::vec3(-center, 0.0f));
+	// scale the object to the right size
+	model *= glm::scale(glm::vec3(size, 1.0f));
+
+	return model;
+}
+
+bool GameObject::operator < (const GameObject& obj) const
+{
+	return (*reinterpret_cast<const unsigned int*>(&key) < *reinterpret_cast<const unsigned int*>(&obj.key));
+}
 
 void Entity::calcGravity(double deltaTime)
 {
