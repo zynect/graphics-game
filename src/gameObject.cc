@@ -7,8 +7,13 @@ void GameObject::checkCollision()
 
 void Player::run(double deltaTime)
 {
-	//updateVelocity(deltaTime, NONE);
-	angle += deltaTime * 10.0f;
+	isResting = true;
+	updateVelocity(deltaTime, RIGHT);
+}
+
+void Enemy::run(double deltaTime)
+{
+	angle -= deltaTime * 10.0f;
 }
 
 void Player::updateVelocity(double deltaTime, int move)
@@ -16,11 +21,11 @@ void Player::updateVelocity(double deltaTime, int move)
 	float dt = static_cast<float>(deltaTime);
 	if (move == LEFT)
 	{
-		velocity.x = -1;
+		velocity.x = -100;
 	}
 	else if (move == RIGHT)
 	{
-		velocity.x = 1;
+		velocity.x = 100;
 	}
 	else //No movement
 	{

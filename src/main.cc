@@ -154,8 +154,8 @@ int main(int argc, char* argv[])
 	double lastTime = glfwGetTime();
 	double deltaTime = 0;
 
-	auto player = make_shared<Player>(glm::vec2(400, 300), 0, glm::vec2(100, 200));
-	objects.push_back(player);
+	objects.push_back(make_shared<Player>(glm::vec2(400, 300), 0, glm::vec2(100, 200)));
+	objects.push_back(make_shared<Enemy>(glm::vec2(200, 200), 0, glm::vec2(100, 100)));
 
 	while (!glfwWindowShouldClose(window)) {
 		// Measure speed
@@ -179,15 +179,17 @@ int main(int argc, char* argv[])
 			obj->run(deltaTime);
 
 			glm::mat4 model = *reinterpret_cast<const glm::mat4*>(mats.model);
-
 			glm::vec2 center = obj->size / 2.0f;
 
+			// read these comments bottom to top
+
+			// and finally, translate it to the proper place
 			model *= glm::translate(glm::vec3(obj->position + center, obj->zIndex));
-
+			// rotate the object
 			model *= glm::rotate(obj->angle, glm::vec3(0.0f, 0.0f, 1.0f));
-
+			// move the center of the object to (0,0)
 			model *= glm::translate(glm::vec3(-center, 0.0f));
-
+			// scale the object to the right size
 			model *= glm::scale(glm::vec3(obj->size, 1.0f));
 
 			CHECK_GL_ERROR(glUniformMatrix4fv(model_matrix_location, 1, GL_FALSE,

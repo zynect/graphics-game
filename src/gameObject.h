@@ -3,8 +3,8 @@
 
 #include <glm/glm.hpp>
 
-const float gravity = 9.81;
-const float maxYVelocity = 10;
+const float gravity = 981;
+const float maxYVelocity = 1000;
 const float horizAccel = 1;
 enum movement {
 	NONE,
@@ -40,6 +40,14 @@ private:
 	bool isResting;
 
 	void updateVelocity(double deltaTime, int key);
+};
+
+class Enemy : public GameObject {
+public:
+	Enemy() = delete;
+	Enemy(glm::vec2 pos, int z, glm::vec2 s) : GameObject(pos, z, s) {};
+	~Enemy() {};
+	virtual void run(double deltaTime);
 };
 
 #endif
