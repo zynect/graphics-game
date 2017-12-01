@@ -16,27 +16,29 @@ enum movement {
 
 class GameObject {
 public:
-	GameObject() : position(), width(), height() {}
-	GameObject(glm::vec2 pos, int w, int h) : position(pos), width(w), height(h) {}
-	~GameObject();
+	GameObject() : position(), width(), height() {};
+	GameObject(glm::vec2 pos, int w, int h) : position(pos), width(w), height(h) {};
+	~GameObject() {};
 
-protected:
+	virtual void run(double deltaTime) = 0;
+
 	glm::vec2 position;
 	int width;
 	int height;
 };
 
-class Player : GameObject {
+class Player : public GameObject {
 public:
-	Player() : velocity(), isResting(false) {}
-	Player(glm::vec2 pos, int w, int h) : GameObject(pos, w, h), velocity(), isResting(false) {}
-	~Player();
+	Player() : velocity(), isResting(false) {};
+	Player(glm::vec2 pos, int w, int h) : GameObject(pos, w, h), velocity(), isResting(false) {};
+	~Player() {};
+	virtual void run(double deltaTime);
 private:
 	glm::vec2 velocity;
 	bool isResting;
 
 	void checkCollision();
-	void updateVelocity(float deltaTime, int key);
+	void updateVelocity(double deltaTime, int key);
 };
 
 #endif

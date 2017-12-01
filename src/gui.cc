@@ -17,7 +17,7 @@ GUI::GUI(GLFWwindow* window)
 	glfwSetCursorPosCallback(window_, MousePosCallback);
 	glfwSetMouseButtonCallback(window_, MouseButtonCallback);
 
-	//glfwGetWindowSize(window_, &window_width_, &window_height_);
+	glfwGetWindowSize(window_, &window_width_, &window_height_);
 	float aspect_ = static_cast<float>(window_width_) / window_height_;
 	projection_matrix_ = glm::ortho(0, window_width_, window_height_, 0);
 }
