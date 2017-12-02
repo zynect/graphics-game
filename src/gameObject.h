@@ -3,9 +3,16 @@
 
 #include <glm/glm.hpp>
 
-const float gravity = 981;
+const float friction = 1.2f;
+const float gravity = 2000;
+const float horizAccel = 500;
 const float maxYVelocity = 1000;
-const float horizAccel = 1;
+const float maxXVelocity = 500;
+const float maxXRunVelocity = 1500;
+const float maxJumpVelocity = 800;
+const float jumpVelocity = 500;
+const float jumpHoldBoost = 100;
+
 enum actions {
 	NONE,
 	LEFT,
@@ -62,6 +69,7 @@ public:
 
 private:
 	void updatePosition(double deltaTime, int move);
+	bool firstJump = false;
 };
 
 class Enemy : public Entity {

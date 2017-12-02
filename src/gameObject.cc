@@ -41,9 +41,9 @@ void Entity::calcGravity(double deltaTime)
 void Entity::checkCollision()
 {
 	// temp floor
-	if (position.y + size.y > 500)
+	if (position.y + size.y > 600)
 	{
-		position.y = 500 - size.y;
+		position.y = 600 - size.y;
 		velocity.y = 0;
 		isResting = true;
 	}
@@ -60,15 +60,45 @@ void Player::updatePosition(double deltaTime, int move)
 
 	if (move == LEFT)
 	{
-		velocity.x = -500;
+		if((isRunning && velocity.x > -maxXRunVelocity) || (!isRunning && velocity.x > -maxXVelocity))
+		{
+			if(velocity.x > 0){
+				velocity.x /= friction;
+			}
+			velocity.x -= horizAccel * dt;
+		}
 	}
 	else if (move == RIGHT)
 	{
-		velocity.x = 500;
+		if((isRunning && velocity.x < maxXRunVelocity) || (!isRunning && velocity.x < maxXVelocity))
+		{
+			if(velocity.x < 0){
+				velocity.x /= friction;
+			}
+			velocity.x += horizAccel * dt;
+		}
 	}
 	else //No movement
 	{
-		velocity.x = 0;
+		velocity.x /= friction;
+	}
+
+	//Jumping
+	if (!isJumping){
+		firstJump = false;
+	}
+	else {
+		if(isResting) {
+			firstJump = true;
+			isResting = false;
+			velocity.y = -jumpVelocity;
+		}
+		else if (firstJump && velocity.y > -maxJumpVelocity) {
+			velocity.y -= jumpHoldBoost;
+		}
+		else {
+			isJumping = false;
+		}
 	}
 
 	calcGravity(deltaTime);

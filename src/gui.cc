@@ -59,6 +59,22 @@ void GUI::keyCallback(int key, int scancode, int action, int mods)
 			activeAction = RIGHT;
 		}
 	}
+
+	if(key == GLFW_KEY_SPACE){
+		if(action == GLFW_PRESS){
+			isJumping = true;
+		} else {
+			isJumping = false;
+		}
+	}
+
+	if(key == GLFW_KEY_LEFT_SHIFT){
+		if(action == GLFW_RELEASE){
+			isRunning = false;
+		} else {
+			isRunning = true;
+		}
+	}
 }
 
 void GUI::mousePosCallback(double mouse_x, double mouse_y)
