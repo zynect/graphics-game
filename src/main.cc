@@ -7,11 +7,13 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <unordered_map>
 #include <memory>
 #include <algorithm>
 
 #include "gui.h"
 #include "gameObject.h"
+#include "sprites.h"
 
 using namespace std;
 
@@ -74,7 +76,21 @@ int main(int argc, char* argv[])
 	glfwMakeContextCurrent(window);
 
 	vector<shared_ptr<GameObject>> objects;
+	unordered_map<Sprite, glm::vec2> sprite_uvs;
+	unsigned char* data = readBMP("../assets/JustMario.png");
 
+	GLuint textureID;
+	glGenTextures(1, &textureID);
+	
+	// "Bind" the newly created texture : all future texture functions will modify this texture
+	glBindTexture(GL_TEXTURE_2D, textureID);
+	
+	// Give the image to OpenGL
+	glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
+	
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	
 	vector<glm::vec4> triangles;
 	triangles.push_back({0.0f, 0.0f, 0.0f, 1.0f});
 	triangles.push_back({1.0f, 0.0f, 0.0f, 1.0f});
