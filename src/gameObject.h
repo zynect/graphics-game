@@ -26,10 +26,15 @@ extern bool isJumping;
 class GameObject {
 public:
 	GameObject() = delete;
-	GameObject(glm::vec2 pos, unsigned int z, glm::vec2 s, unsigned int id, float a = 0.0f) : position(pos), size(s), angle(), key({.textureId = id, .zIndex = z}) {};
+	GameObject(glm::vec2 pos, unsigned int z, glm::vec2 s, unsigned int id, float a = 0.0f) : position(pos), size(s), angle(), key({.textureId = id, .zIndex = z}), frameId() {};
 	~GameObject() {};
 	virtual void run(double deltaTime) = 0;
 	glm::mat4 modelMatrix();
+	void getCurrentSprite(unsigned int& textureId, unsigned int& frame)
+	{
+		textureId = key.textureId;
+		frame = frameId;
+	};
 
 	bool operator < (const GameObject& obj) const;
 
@@ -39,6 +44,8 @@ protected:
 		unsigned int textureId:28;
 		unsigned int zIndex:4;
 	} key;
+
+	unsigned int frameId;
 	glm::vec2 size;
 	float angle;
 };

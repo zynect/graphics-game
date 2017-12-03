@@ -21,15 +21,15 @@ const string window_title = "Game";
 const int initial_window_width = 800, initial_window_height = 600;
 
 const char* vertex_shader =
-#include "shaders/red.vert"
+#include "shaders/texture.vert"
 ;
 
 const char* fragment_shader =
-#include "shaders/red.frag"
+#include "shaders/texture.frag"
 ;
 
 // VBO and VAO descriptors.
-enum { kVertexBuffer, kIndexBuffer, kNumVbos };
+enum { kVertexBuffer, kIndexBuffer, kUVBuffer, kNumVbos };
 
 // These are our VAOs.
 enum { kGeometryVao, kFloorVao, kNumVaos };
@@ -76,8 +76,8 @@ int main(int argc, char* argv[])
 	glfwMakeContextCurrent(window);
 
 	vector<shared_ptr<GameObject>> objects;
-	unordered_map<unsigned int, Sprite> sprites;
-	sprites.insert(std::make_pair(SpriteId::BigMario, Sprite("../assets/JustMario", 16, 32)));
+	vector<Sprite> sprites;
+	sprites.push_back({"../assets/JustMario", 16, 32});
 
 	vector<glm::vec4> triangles;
 	triangles.push_back({0.0f, 0.0f, 0.0f, 1.0f});
@@ -100,7 +100,6 @@ int main(int argc, char* argv[])
 
 	// Setup vertex data in a VBO.
 	CHECK_GL_ERROR(glBindBuffer(GL_ARRAY_BUFFER, g_buffer_objects[kGeometryVao][kVertexBuffer]));
-	// NOTE: We do not send anything right now, we just describe it to OpenGL.
 	CHECK_GL_ERROR(glBufferData(GL_ARRAY_BUFFER,
 				sizeof(float) * triangles.size() * 4, &triangles[0],
 				GL_STATIC_DRAW));
@@ -112,6 +111,14 @@ int main(int argc, char* argv[])
 	CHECK_GL_ERROR(glBufferData(GL_ELEMENT_ARRAY_BUFFER,
 				sizeof(uint32_t) * faces.size() * 3,
 				&faces[0], GL_STATIC_DRAW));
+
+	// Setup UV data.
+	CHECK_GL_ERROR(glBindBuffer(GL_ARRAY_BUFFER, g_buffer_objects[kGeometryVao][kUVBuffer]));
+	CHECK_GL_ERROR(glBufferData(GL_ARRAY_BUFFER,
+				sizeof(float) * triangles.size() * 2, nullptr,
+				GL_STATIC_DRAW));
+	CHECK_GL_ERROR(glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0));
+	CHECK_GL_ERROR(glEnableVertexAttribArray(1));
 
 	// Setup vertex shader.
 	GLuint vertex_shader_id = 0;
@@ -137,6 +144,7 @@ int main(int argc, char* argv[])
 
 	// Bind attributes.
 	CHECK_GL_ERROR(glBindAttribLocation(program_id, 0, "vertex_position"));
+	CHECK_GL_ERROR(glBindAttribLocation(program_id, 1, "vertexUV"));
 	CHECK_GL_ERROR(glBindFragDataLocation(program_id, 0, "fragment_color"));
 	glLinkProgram(program_id);
 	CHECK_GL_PROGRAM_ERROR(program_id);
@@ -188,13 +196,23 @@ int main(int argc, char* argv[])
 
 		sort(objects.begin(), objects.end());
 		
-		for(shared_ptr<GameObject> obj : objects)
+		for(shared_ptr<GameObject>& obj : objects)
 		{
 			glm::mat4 model = *reinterpret_cast<const glm::mat4*>(mats.model) * obj->modelMatrix();
 
 			CHECK_GL_ERROR(glUniformMatrix4fv(model_matrix_location, 1, GL_FALSE,
 						&model[0][0]));
 
+			CHECK_GL_ERROR(glBindBuffer(GL_ARRAY_BUFFER, g_buffer_objects[kGeometryVao][kUVBuffer]));
+			unsigned int textureId;
+			unsigned int frameId;
+			obj->getCurrentSprite(textureId, frameId);
+			Sprite& sprite = sprites[textureId];
+
+			CHECK_GL_ERROR(glBufferData(GL_ARRAY_BUFFER,
+						sizeof(float) * triangles.size() * 2, &sprite.getFrameUVs(frameId)[0],
+						GL_STATIC_DRAW));
+			
 			CHECK_GL_ERROR(glDrawElements(GL_TRIANGLES, faces.size() * 3, GL_UNSIGNED_INT, 0));
 		}
 
