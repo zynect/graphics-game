@@ -41,7 +41,7 @@ typedef struct {
 
 class Image;
 // global I/O routines
-extern bool readBMP(const char *fname, Image& image);
+extern int readBMP(const char *fname, Image& image);
 //int& width, int& height, void* data_ptr);
 
 #endif

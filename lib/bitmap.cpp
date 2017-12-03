@@ -15,13 +15,13 @@
 BMP_BITMAPFILEHEADER bmfh; 
 BMP_BITMAPINFOHEADER bmih; 
 
-bool readBMP(const char *fname, Image& image)
+int readBMP(const char *fname, Image& image)
 { 
 	FILE* file; 
 	BMP_DWORD pos; 
  
 	if ( (file=fopen( fname, "rb" )) == NULL )  
-		return NULL; 
+		return -1; 
 	 
 //	I am doing fread( &bmfh, sizeof(BMP_BITMAPFILEHEADER), 1, file ) in a safe way. :}
 	fread( &(bmfh.bfType), 2, 1, file); 
@@ -36,13 +36,20 @@ bool readBMP(const char *fname, Image& image)
  
 	// error checking
 	if ( bmfh.bfType!= 0x4d42 ) {	// "BM" actually
-		return NULL;
+		return -1;
 	}
-	if ( bmih.biBitCount != 24 )  
-		return NULL; 
+
+	switch (bmih.biBitCount)
+	{
+		case 24:
+		case 32:
+			break;
+		default:
+			return -1;
+	}
 /*
  	if ( bmih.biCompression != BMP_BI_RGB ) {
-		return NULL;
+		return -1;
 	}
 */
 	fseek( file, pos, SEEK_SET ); 
@@ -50,7 +57,16 @@ bool readBMP(const char *fname, Image& image)
 	int width = image.width = bmih.biWidth; 
 	int height = image.height = bmih.biHeight; 
  
-	int padWidth = width * 3; 
+	int padWidth = width;
+	switch (bmih.biBitCount)
+	{
+		case 24:
+			padWidth *= 3;
+			break;
+		case 32:
+			padWidth *= 4;
+			break;
+	}
 	int pad = 0; 
 	if ( padWidth % 4 != 0 ) { 
 		pad = 4 - (padWidth % 4); 
@@ -65,7 +81,7 @@ bool readBMP(const char *fname, Image& image)
 	int foo = fread( data, bytes, 1, file ); 
 	
 	if (!foo) {
-		return false;
+		return -1;
 	}
 
 	fclose( file );
@@ -84,15 +100,33 @@ bool readBMP(const char *fname, Image& image)
 	{
 		for ( i = 0; i < width; ++i )
 		{
-			out[1] = in[1];
-			temp = in[2];
-			out[2] = in[0];
-			out[0] = temp;
+			switch (bmih.biBitCount)
+			{
+				case 24:
+					out[1] = in[1];
+					temp = in[2];
+					out[2] = in[0];
+					out[0] = temp;
 
-			in += 3;
-			out += 3;
+					in += 3;
+					out += 3;
+					break;
+				case 32:
+					temp = in[0];
+					out[0] = in[3];
+					out[3] = temp;
+					
+					temp = in[1];
+					out[1] = in[2];
+					out[2] = temp;
+
+					in += 4;
+					out += 4;
+					break;
+			}
+			
 		}
 		in += pad;
 	}
-	return true;
+	return bmih.biBitCount;
 } 
