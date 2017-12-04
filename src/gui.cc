@@ -28,7 +28,7 @@ void GUI::updateLoop()
 {
 	glfwGetFramebufferSize(window_, &window_width_, &window_height_);
 	glViewport(0, 0, window_width_, window_height_);
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClearColor(93.0f/256.0f, 148.0f/256.0f, 251.0f/256.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glDepthFunc(GL_LESS);
 	glEnable(GL_BLEND);
@@ -49,14 +49,14 @@ void GUI::keyCallback(int key, int scancode, int action, int mods)
 	/*if (key == GLFW_KEY_W) {
 	} else if (key == GLFW_KEY_S) {
 	} else*/
-	if (key == GLFW_KEY_A) {
+	if (key == GLFW_KEY_A || key == GLFW_KEY_LEFT) {
 		if (action == GLFW_RELEASE) {
 			activeAction = NONE;
 		} else {
 			activeAction = LEFT;
 		}
 	}
-	else if (key == GLFW_KEY_D) {
+	else if (key == GLFW_KEY_D || key == GLFW_KEY_RIGHT) {
 		if (action == GLFW_RELEASE) {
 			activeAction = NONE;
 		} else {
