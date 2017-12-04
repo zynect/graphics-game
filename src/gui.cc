@@ -44,19 +44,19 @@ void GUI::keyCallback(int key, int scancode, int action, int mods)
 		return;
 	}
 
-	cout << key << ' ' << action << endl;
+	//cout << key << ' ' << action << endl;
 
 	/*if (key == GLFW_KEY_W) {
 	} else if (key == GLFW_KEY_S) {
 	} else*/
-	if (key == GLFW_KEY_LEFT) {
+	if (key == GLFW_KEY_A) {
 		if (action == GLFW_RELEASE) {
 			activeAction = NONE;
 		} else {
 			activeAction = LEFT;
 		}
 	}
-	else if (key == GLFW_KEY_RIGHT) {
+	else if (key == GLFW_KEY_D) {
 		if (action == GLFW_RELEASE) {
 			activeAction = NONE;
 		} else {
@@ -67,7 +67,7 @@ void GUI::keyCallback(int key, int scancode, int action, int mods)
 	if(key == GLFW_KEY_SPACE){
 		if(action == GLFW_PRESS){
 			isJumping = true;
-		} else {
+		} else if(action == GLFW_RELEASE) {
 			isJumping = false;
 		}
 	}
