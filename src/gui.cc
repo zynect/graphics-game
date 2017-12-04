@@ -49,14 +49,14 @@ void GUI::keyCallback(int key, int scancode, int action, int mods)
 	/*if (key == GLFW_KEY_W) {
 	} else if (key == GLFW_KEY_S) {
 	} else*/
-	if (key == GLFW_KEY_A) {
+	if (key == GLFW_KEY_A || key == GLFW_KEY_LEFT) {
 		if (action == GLFW_RELEASE) {
 			activeAction = NONE;
 		} else {
 			activeAction = LEFT;
 		}
 	}
-	else if (key == GLFW_KEY_D) {
+	else if (key == GLFW_KEY_D || key == GLFW_KEY_RIGHT) {
 		if (action == GLFW_RELEASE) {
 			activeAction = NONE;
 		} else {

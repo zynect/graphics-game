@@ -7,7 +7,7 @@
 
 const float friction = 1.2f;
 const float gravity = 2000;
-const float horizAccel = 500;
+const float horizAccel = 2000;
 const float maxYVelocity = 1000;
 const float maxXVelocity = 500;
 const float maxXRunVelocity = 1500;
