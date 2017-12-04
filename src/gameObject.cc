@@ -1,5 +1,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
+#include <iostream>
 #include "gameObject.h"
 
 int activeAction = NONE;
@@ -29,6 +30,54 @@ bool GameObject::operator < (const GameObject& obj) const
 	return (*reinterpret_cast<const unsigned int*>(&key) < *reinterpret_cast<const unsigned int*>(&obj.key));
 }
 
+bool GameObject::checkCollision(const std::shared_ptr<GameObject>& obj)
+{
+	return (this->position.x <= obj->position.x + obj->size.x &&
+   	 this->position.x + this->size.x >= obj->position.x &&
+   	 this->position.y <= obj->position.y + obj->size.y &&
+   	 this->position.y + this->size.y >= obj->position.y);
+}
+
+actions GameObject::repelFrom(const std::shared_ptr<GameObject>& obj)
+{
+	float thisAbove = (this->position.y + this->size.y) - obj->position.y;
+	float thisBelow = (obj->position.y + obj->size.y) - this->position.y;
+	float thisLeft = (this->position.x + this->size.x) - obj->position.x;
+	float thisRight = (obj->position.x + obj->size.x) - this->position.x;
+	if(thisAbove <= thisBelow && thisAbove <= thisRight && thisAbove <= thisLeft)	{
+		this->position.y = obj->position.y - this->size.y;
+		return UP;
+	}	else if (thisBelow <= thisAbove && thisBelow <= thisRight && thisBelow <= thisLeft) {
+		this->position.y = obj->position.y + obj->size.y;
+		return DOWN;
+	}	else if(thisLeft <= thisAbove && thisLeft <= thisBelow && thisLeft <= thisRight)	{
+		this->position.x = obj->position.x - this->size.x;
+		return LEFT;
+	}	else {
+		this->position.x = obj->position.x + obj->size.x;
+		return RIGHT;
+	}
+}
+
+void Entity::collide(const std::shared_ptr<GameObject>& obj)
+{
+	if(obj == nullptr)
+	{
+		isResting = false;
+	}
+	else
+	{
+		int action = repelFrom(obj);
+		if(action == UP || action == DOWN) {
+			velocity.y = 0;
+		} else {
+			velocity.x = 0;
+		}
+
+		isResting = true;
+	}
+}
+
 void Entity::calcGravity(double deltaTime)
 {
 	float dt = static_cast<float>(deltaTime);
@@ -38,15 +87,28 @@ void Entity::calcGravity(double deltaTime)
 	}
 }
 
-void Entity::checkCollision()
+void Entity::checkForCollisions()
 {
+	bool hasCollided = false;
 	// temp floor
-	if (position.y + size.y > 600)
+	if (position.y + size.y >= 600)
 	{
 		position.y = 600 - size.y;
 		velocity.y = 0;
 		isResting = true;
+		hasCollided = true;
 	}
+
+	for(const std::shared_ptr<GameObject> &g : objects)
+	{
+		if(g.get() != this && GameObject::checkCollision(g))
+		{
+			collide(g);
+			hasCollided = true;
+		}
+	}
+	if(!hasCollided)
+		collide(nullptr);
 }
 
 void Player::run(double deltaTime)
@@ -103,7 +165,7 @@ void Player::updatePosition(double deltaTime, int move)
 
 	calcGravity(deltaTime);
 	position += velocity * dt;
-	checkCollision();
+	checkForCollisions();
 }
 
 void Enemy::run(double deltaTime)
@@ -130,5 +192,5 @@ void Enemy::updatePosition(double deltaTime, int move)
 
 	calcGravity(deltaTime);
 	position += velocity * dt;
-	checkCollision();
+	checkForCollisions();
 }

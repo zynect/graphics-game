@@ -68,6 +68,8 @@ GLFWwindow* init_glefw()
 	return ret;
 }
 
+vector<shared_ptr<GameObject>> objects;
+
 int main(int argc, char* argv[])
 {
 	GLFWwindow *window = init_glefw();
@@ -75,7 +77,6 @@ int main(int argc, char* argv[])
 	GUI gui(window);
 	glfwMakeContextCurrent(window);
 
-	vector<shared_ptr<GameObject>> objects;
 	unordered_map<unsigned int, Sprite> sprites;
 	sprites.insert(std::make_pair(SpriteId::BigMario, Sprite("../assets/JustMario", 16, 32)));
 
@@ -159,10 +160,12 @@ int main(int argc, char* argv[])
 
 	objects.push_back(make_shared<Player>(glm::vec2(400, 300), 0, glm::vec2(100, 200), 0));
 
-	for (int i = 0; i < 1000; i++)
+	objects.push_back(make_shared<Enemy>(glm::vec2(100, 200), 0, glm::vec2(50, 50), 0));
+	objects.push_back(make_shared<Enemy>(glm::vec2(100, 100), 0, glm::vec2(50, 50), 0));
+	/*for (int i = 0; i < 1000; i++)
 	{
 		objects.push_back(make_shared<Enemy>(glm::vec2((i * 20) % 800, ((i * 20) / 800) * 20), 0, glm::vec2(10, 10), 0));
-	}
+	}*/
 
 	while (!glfwWindowShouldClose(window)) {
 		// Measure speed
@@ -180,14 +183,14 @@ int main(int argc, char* argv[])
 					mats.projection));
 		CHECK_GL_ERROR(glUniformMatrix4fv(view_matrix_location, 1, GL_FALSE,
 					mats.view));
-		
+
 		for(shared_ptr<GameObject> obj : objects)
 		{
 			obj->run(deltaTime);
 		}
 
 		sort(objects.begin(), objects.end());
-		
+
 		for(shared_ptr<GameObject> obj : objects)
 		{
 			glm::mat4 model = *reinterpret_cast<const glm::mat4*>(mats.model) * obj->modelMatrix();
