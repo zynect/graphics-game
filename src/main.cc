@@ -78,7 +78,26 @@ int main(int argc, char* argv[])
 	glfwMakeContextCurrent(window);
 
 	vector<Sprite> sprites;
-	sprites.push_back({"../assets/mario", 16, 32});
+    std::vector<glm::vec2> frames;
+	Image gameTextures;
+	const char* textureFile = "../assets/game.bmp";
+	assert(readBMP(textureFile, gameTextures) > -1);
+	readSprites(sprites, frames, gameTextures.width, gameTextures.height);
+	//frames.push_back({{0, 1}, {1, 1}, {0, 0}, {1, 0}});
+
+	GLuint textureID;
+	glGenTextures(1, &textureID);
+	
+	// "Bind" the newly created texture : all future texture functions will modify this texture
+	glBindTexture(GL_TEXTURE_2D, textureID);
+	
+	// Give the image to OpenGL
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, gameTextures.width, gameTextures.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, &gameTextures.bytes[0]);
+	
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 	vector<glm::vec4> triangles;
 	triangles.push_back({0.0f, 0.0f, 0.0f, 1.0f});
@@ -168,11 +187,11 @@ int main(int argc, char* argv[])
 
 	objects.push_back(make_shared<Player>(glm::vec2(400, 300), 0, glm::vec2(100, 200), 0));
 
-	objects.push_back(make_shared<Enemy>(glm::vec2(100, 200), 0, glm::vec2(50, 50), 0));
-	objects.push_back(make_shared<Enemy>(glm::vec2(100, 100), 0, glm::vec2(50, 50), 0));
+	objects.push_back(make_shared<Enemy>(glm::vec2(100, 200), 0, glm::vec2(100, 100), 1));
+	objects.push_back(make_shared<Enemy>(glm::vec2(100, 50), 0, glm::vec2(100, 100), 1));
 	/*for (int i = 0; i < 1000; i++)
 	{
-		objects.push_back(make_shared<Enemy>(glm::vec2((i * 20) % 800, ((i * 20) / 800) * 20), 0, glm::vec2(10, 10), 0));
+		objects.push_back(make_shared<Enemy>(glm::vec2((i * 20) % 800, ((i * 20) / 800) * 20), 0, glm::vec2(16, 32), 0));
 	}*/
 
 	while (!glfwWindowShouldClose(window)) {
@@ -209,10 +228,9 @@ int main(int argc, char* argv[])
 			unsigned int textureId;
 			unsigned int frameId;
 			obj->getCurrentSprite(textureId, frameId);
-			const std::vector<glm::vec2>& uvCoords = sprites[textureId].getFrameUVs(frameId);
 
 			CHECK_GL_ERROR(glBufferData(GL_ARRAY_BUFFER,
-						sizeof(float) * triangles.size() * 2, &uvCoords[0],
+						sizeof(float) * triangles.size() * 2, &frames[sprites[textureId][frameId]][0],
 						GL_STATIC_DRAW));
 
 			CHECK_GL_ERROR(glDrawElements(GL_TRIANGLES, faces.size() * 3, GL_UNSIGNED_INT, 0));

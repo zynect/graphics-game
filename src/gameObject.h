@@ -40,7 +40,7 @@ public:
 	void getCurrentSprite(unsigned int& textureId, unsigned int& frame)
 	{
 		textureId = key.textureId;
-		frame = frameId;
+		frame = std::floor(frameId);
 	};
 
 	bool operator < (const GameObject& obj) const;
@@ -52,7 +52,7 @@ protected:
 		unsigned int zIndex:4;
 	} key;
 
-	unsigned int frameId;
+	float frameId;
 	glm::vec2 size;
 	float angle;
 };
@@ -65,6 +65,7 @@ public:
 	Entity(glm::vec2 pos, unsigned int z, glm::vec2 s, unsigned int id, float a = 0.0f) : GameObject(pos, z, s, id, a), velocity(), isResting(false) {};
 	~Entity() {};
 	virtual void run(double deltaTime) = 0;
+	virtual void animate(double deltaTime) = 0;
 	void collide(const std::shared_ptr<GameObject>& obj);
 
 protected:
@@ -83,6 +84,7 @@ public:
 	Player(glm::vec2 pos, unsigned int z, glm::vec2 s, unsigned int id, float a = 0.0f) : Entity(pos, z, s, id, a) {};
 	~Player() {};
 	void run(double deltaTime);
+	void animate(double deltaTime);
 
 private:
 	void updatePosition(double deltaTime, int move);
@@ -95,6 +97,7 @@ public:
 	Enemy(glm::vec2 pos, unsigned int z, glm::vec2 s, unsigned int id, float a = 0.0f) : Entity(pos, z, s, id, a) {};
 	~Enemy() {};
 	void run(double deltaTime);
+	void animate(double deltaTime);
 
 private:
 	void updatePosition(double deltaTime, int move);

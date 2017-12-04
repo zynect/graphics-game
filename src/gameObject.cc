@@ -114,6 +114,36 @@ void Entity::checkForCollisions()
 void Player::run(double deltaTime)
 {
 	updatePosition(deltaTime, activeAction);
+	animate(deltaTime);
+}
+
+void Player::animate(double deltaTime)
+{
+	if (!isResting)
+	{
+		frameId = 5;
+	}
+	else if (velocity.x < 3.f)
+	{
+		frameId = 0;
+	}
+	else
+	{
+		if (frameId < 1.0f)
+			frameId = 1.0f;
+		
+		frameId = (frameId + deltaTime * 10.f);
+
+		if (frameId > 4.0f)
+			frameId = 1.0f;
+	}
+}
+
+void Enemy::animate(double deltaTime)
+{
+	frameId = (frameId + deltaTime * 10.0f);
+	if (frameId > 2)
+		frameId = 0;
 }
 
 void Player::updatePosition(double deltaTime, int move)
@@ -171,6 +201,7 @@ void Player::updatePosition(double deltaTime, int move)
 void Enemy::run(double deltaTime)
 {
 	updatePosition(deltaTime, NONE);
+	animate(deltaTime);
 }
 
 void Enemy::updatePosition(double deltaTime, int move)
