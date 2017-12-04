@@ -27,7 +27,7 @@ public:
             std::string bmp = fileName + ".bmp";
 	        assert(readBMP(bmp.c_str(), img));
 	        // TODO: read in UVs too
-            frames.push_back({{0, 0}, {1, 0}, {0, 1}, {1, 1}});
+            frames.push_back({{0, 32}, {16, 32}, {0, 0}, {16, 0}});
 
             GLuint textureID;
             glGenTextures(1, &textureID);
@@ -40,6 +40,12 @@ public:
             
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         }
     
+    const std::vector<glm::vec2>& getFrameUVs(unsigned int frame) const
+    {
+        return frames[frame];
+    };
 };

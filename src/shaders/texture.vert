@@ -3,8 +3,8 @@ R"zzz(
 uniform mat4 projection;
 uniform mat4 model;
 uniform mat4 view;
-in vec4 vertex_position;
-layout(location = 0) in vec2 vertexUV;
+layout(location = 0) in vec4 vertex_position;
+layout(location = 1) in vec2 vertexUV;
 
 // Output data ; will be interpolated for each fragment.
 out vec2 UV;
