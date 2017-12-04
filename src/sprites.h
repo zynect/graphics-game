@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 #include <bitmap.h>
 #include <image.h>
+#include <fstream>
 
 #include <vector>
 
@@ -25,9 +26,10 @@ public:
         img()
         {
             std::string bmp = fileName + ".bmp";
+            std::string uvs = fileName + ".uv";
 	        assert(readBMP(bmp.c_str(), img));
-	        // TODO: read in UVs too
-            frames.push_back({{0, 32}, {16, 32}, {0, 0}, {16, 0}});
+	        readUVs(uvs);
+            //frames.push_back({{0, 1}, {1, 1}, {0, 0}, {1, 0}});
 
             GLuint textureID;
             glGenTextures(1, &textureID);
@@ -36,16 +38,46 @@ public:
             glBindTexture(GL_TEXTURE_2D, textureID);
             
             // Give the image to OpenGL
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, &img.bytes[0]);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img.width, img.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, &img.bytes[0]);
             
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         }
     
     const std::vector<glm::vec2>& getFrameUVs(unsigned int frame) const
     {
         return frames[frame];
+    };
+
+    void readUVs(const std::string& fileName)
+    {
+        float left, top, right, bottom;
+        std::ifstream infile(fileName);
+        while (infile >> left >> top)
+        {
+            std::vector<glm::vec2> frame;
+
+            right = left + width - .1;
+            bottom = top + height - .1;
+            
+            left += .1;
+            top += .1;
+
+            top = img.height - top;
+            bottom = img.height - bottom;
+
+            left /= static_cast<float>(img.width);
+            top /= static_cast<float>(img.height);
+            right /= static_cast<float>(img.width);
+            bottom /= static_cast<float>(img.height);
+
+            frame.push_back({left, top});
+            frame.push_back({right, top});
+            frame.push_back({left, bottom});
+            frame.push_back({right, bottom});
+            frames.push_back(frame);
+        }
     };
 };

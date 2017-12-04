@@ -77,7 +77,7 @@ int main(int argc, char* argv[])
 
 	vector<shared_ptr<GameObject>> objects;
 	vector<Sprite> sprites;
-	sprites.push_back({"../assets/JustMario", 16, 32});
+	sprites.push_back({"../assets/mario", 16, 32});
 
 	vector<glm::vec4> triangles;
 	triangles.push_back({0.0f, 0.0f, 0.0f, 1.0f});
@@ -169,7 +169,7 @@ int main(int argc, char* argv[])
 
 	for (int i = 0; i < 1000; i++)
 	{
-		objects.push_back(make_shared<Enemy>(glm::vec2((i * 20) % 800, ((i * 20) / 800) * 20), 0, glm::vec2(10, 10), 0));
+		objects.push_back(make_shared<Enemy>(glm::vec2((i * 20) % 800, ((i * 20) / 800) * 20), 0, glm::vec2(16, 32), 0));
 	}
 
 	while (!glfwWindowShouldClose(window)) {
@@ -207,10 +207,10 @@ int main(int argc, char* argv[])
 			unsigned int textureId;
 			unsigned int frameId;
 			obj->getCurrentSprite(textureId, frameId);
-			Sprite& sprite = sprites[textureId];
+			const std::vector<glm::vec2>& uvCoords = sprites[textureId].getFrameUVs(frameId);
 
 			CHECK_GL_ERROR(glBufferData(GL_ARRAY_BUFFER,
-						sizeof(float) * triangles.size() * 2, &sprite.getFrameUVs(frameId)[0],
+						sizeof(float) * triangles.size() * 2, &uvCoords[0],
 						GL_STATIC_DRAW));
 			
 			CHECK_GL_ERROR(glDrawElements(GL_TRIANGLES, faces.size() * 3, GL_UNSIGNED_INT, 0));
