@@ -69,12 +69,11 @@ void Entity::collide(const std::shared_ptr<GameObject>& obj)
 	{
 		int action = repelFrom(obj);
 		if(action == UP || action == DOWN) {
+			isResting = true;
 			velocity.y = 0;
 		} else {
 			velocity.x = 0;
 		}
-
-		isResting = true;
 	}
 }
 
