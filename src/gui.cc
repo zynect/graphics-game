@@ -28,7 +28,7 @@ void GUI::updateLoop()
 {
 	glfwGetFramebufferSize(window_, &window_width_, &window_height_);
 	glViewport(0, 0, window_width_, window_height_);
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClearColor(93.0f/256.0f, 148.0f/256.0f, 251.0f/256.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glDepthFunc(GL_LESS);
 	glEnable(GL_BLEND);
