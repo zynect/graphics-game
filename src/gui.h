@@ -39,6 +39,7 @@ private:
 
 	int window_width_, window_height_;
 
+	int cur_dir = NONE;
 	int current_button_ = -1;
 	float last_x_ = 0.0f, last_y_ = 0.0f, current_x_ = 0.0f, current_y_ = 0.0f;
 	const float camera_distance_ = 1.0f;
