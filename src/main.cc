@@ -18,7 +18,7 @@
 using namespace std;
 
 const string window_title = "Game";
-const int initial_window_width = 800, initial_window_height = 600;
+const int initial_window_width = 640, initial_window_height = 600;
 
 const char* vertex_shader =
 #include "shaders/texture.vert"
@@ -185,14 +185,16 @@ int main(int argc, char* argv[])
 	double lastTime = glfwGetTime();
 	double deltaTime = 0;
 
-	objects.push_back(make_shared<Player>(glm::vec2(400, 300), 0, glm::vec2(100, 200), 0));
+	objects.push_back(make_shared<Player>(glm::vec2(40, 30), 0, glm::vec2(16, 32), 0));
 
-	objects.push_back(make_shared<Enemy>(glm::vec2(100, 200), 0, glm::vec2(100, 100), 1));
-	objects.push_back(make_shared<Enemy>(glm::vec2(100, 50), 0, glm::vec2(100, 100), 1));
+	objects.push_back(make_shared<Enemy>(glm::vec2(10, 20), 0, glm::vec2(16, 16), 1));
+	objects.push_back(make_shared<Enemy>(glm::vec2(10, 50), 0, glm::vec2(16, 16), 1));
 	/*for (int i = 0; i < 1000; i++)
 	{
 		objects.push_back(make_shared<Enemy>(glm::vec2((i * 20) % 800, ((i * 20) / 800) * 20), 0, glm::vec2(16, 32), 0));
 	}*/
+
+	gui.scaleGame(2.5f);
 
 	while (!glfwWindowShouldClose(window)) {
 		// Measure speed
@@ -219,7 +221,7 @@ int main(int argc, char* argv[])
 		sort(objects.begin(), objects.end());
 		for(shared_ptr<GameObject>& obj : objects)
 		{
-			glm::mat4 model = *reinterpret_cast<const glm::mat4*>(mats.model) * obj->modelMatrix();
+			glm::mat4 model = obj->modelMatrix();
 
 			CHECK_GL_ERROR(glUniformMatrix4fv(model_matrix_location, 1, GL_FALSE,
 						&model[0][0]));

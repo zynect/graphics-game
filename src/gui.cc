@@ -124,9 +124,15 @@ void GUI::updateMatrices()
 	//light_position_ = glm::vec4(eye_, 1.0f);
 
 	aspect_ = static_cast<float>(window_width_) / window_height_;
-	projection_matrix_ = glm::ortho(0.0f, static_cast<float>(window_width_), static_cast<float>(window_height_), 0.0f);
+	projection_matrix_ = glm::ortho(0.0f, static_cast<float>(window_width_) / gameScale, static_cast<float>(window_height_) / gameScale, 0.0f);
 	//projection_matrix_ = glm::perspective(60.0f, (float)window_width_ / (float)window_height_, 0.1f, 100.0f);
 	model_matrix_ = glm::mat4(1.0f);
+}
+
+void GUI::scaleGame(float scale)
+{
+	gameScale = scale;
+	updateMatrices();
 }
 
 MatrixPointers GUI::getMatrixPointers() const

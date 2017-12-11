@@ -6,14 +6,14 @@
 #include <memory>
 
 const float friction = 1.2f;
-const float gravity = 2000;
-const float horizAccel = 2000;
-const float maxYVelocity = 1000;
-const float maxXVelocity = 500;
-const float maxXRunVelocity = 1500;
-const float maxJumpVelocity = 800;
-const float jumpVelocity = 500;
-const float jumpHoldBoost = 100;
+const float gravity = 1000;
+const float horizAccel = 200;
+const float maxYVelocity = 400;
+const float maxXVelocity = 150;
+const float maxXRunVelocity = 250;
+const float maxJumpVelocity = 80;
+const float jumpVelocity = 400;
+const float jumpHoldBoost = 300;
 
 enum actions {
 	NONE,
@@ -30,7 +30,7 @@ extern bool isJumping;
 class GameObject {
 public:
 	GameObject() = delete;
-	GameObject(glm::vec2 pos, unsigned int z, glm::vec2 s, unsigned int id, float a = 0.0f) : position(pos), size(s), angle(), key({.textureId = id, .zIndex = z}), frameId() {};
+	GameObject(glm::vec2 pos, unsigned int z, glm::vec2 s, unsigned int id, float a = 0.0f) : position(pos), size(s), angle(), key({.textureId = id, .zIndex = z}), frameId(), facingLeft(), timer() {};
 	~GameObject() {};
 	virtual void run(double deltaTime) = 0;
 	virtual void collide(const std::shared_ptr<GameObject>& obj) = 0;
@@ -40,7 +40,7 @@ public:
 	void getCurrentSprite(unsigned int& textureId, unsigned int& frame)
 	{
 		textureId = key.textureId;
-		frame = std::floor(frameId);
+		frame = frameId;
 	};
 
 	bool operator < (const GameObject& obj) const;
