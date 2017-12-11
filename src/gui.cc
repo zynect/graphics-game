@@ -50,20 +50,26 @@ void GUI::keyCallback(int key, int scancode, int action, int mods)
 	} else if (key == GLFW_KEY_S) {
 	} else*/
 	if (key == GLFW_KEY_A || key == GLFW_KEY_LEFT) {
-		if (action == GLFW_RELEASE && cur_dir == LEFT) {
-			activeAction = NONE;
+		if (action == GLFW_RELEASE) {
+			pressed.left = 0;
 		} else if(action == GLFW_PRESS) {
-			cur_dir = LEFT;
-			activeAction = LEFT;
+			pressed.left = 1;
 		}
 	}
 	else if (key == GLFW_KEY_D || key == GLFW_KEY_RIGHT) {
-		if (action == GLFW_RELEASE && cur_dir == RIGHT) {
-			activeAction = NONE;
+		if (action == GLFW_RELEASE) {
+			pressed.right = 0;
 		} else if(action == GLFW_PRESS) {
-			cur_dir = RIGHT;
-			activeAction = RIGHT;
+			pressed.right = 1;
 		}
+	}
+
+	if(pressed.right == 1){
+		activeAction = RIGHT;
+	} else if(pressed.left == 1){
+		activeAction = LEFT;
+	} else{
+		activeAction = NONE;
 	}
 
 	if(key == GLFW_KEY_SPACE){

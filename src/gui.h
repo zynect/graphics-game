@@ -39,7 +39,6 @@ private:
 
 	int window_width_, window_height_;
 
-	int cur_dir = NONE;
 	int current_button_ = -1;
 	float last_x_ = 0.0f, last_y_ = 0.0f, current_x_ = 0.0f, current_y_ = 0.0f;
 	const float camera_distance_ = 1.0f;
@@ -49,6 +48,10 @@ private:
 	float aspect_;
 	float rotation_angle_;
 
+	struct {
+		unsigned int left:1;
+		unsigned int right:1;
+	} pressed;
 	/*glm::vec3 eye_ = glm::vec3(0.0f, 0.1f, camera_distance_);
 	glm::vec3 up_ = glm::vec3(0.0f, 1.0f, 0.0f);
 	glm::vec3 look_ = glm::vec3(0.0f, 0.0f, -1.0f);
