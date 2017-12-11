@@ -48,6 +48,10 @@ private:
 	float aspect_;
 	float rotation_angle_;
 
+	struct {
+		unsigned int left:1;
+		unsigned int right:1;
+	} pressed;
 	/*glm::vec3 eye_ = glm::vec3(0.0f, 0.1f, camera_distance_);
 	glm::vec3 up_ = glm::vec3(0.0f, 1.0f, 0.0f);
 	glm::vec3 look_ = glm::vec3(0.0f, 0.0f, -1.0f);
