@@ -92,9 +92,9 @@ void Entity::checkForCollisions()
 {
 	bool hasCollided = false;
 	// temp floor
-	if (position.y + size.y >= 600)
+	if (position.y + size.y >= 240)
 	{
-		position.y = 600 - size.y;
+		position.y = 240 - size.y;
 		velocity.y = 0;
 		isResting = true;
 		hasCollided = true;
@@ -120,30 +120,46 @@ void Player::run(double deltaTime)
 
 void Player::animate(double deltaTime)
 {
+	if (facingLeft)
+		frameId = -frameId;
+	
 	if (!isResting)
 	{
 		frameId = 5;
 	}
-	else if (velocity.x < 3.f)
+	else if (fabs(velocity.x) < 3.f)
 	{
 		frameId = 0;
 	}
 	else
 	{
-		if (frameId < 1.0f)
-			frameId = 1.0f;
+		timer += deltaTime * fabs(velocity.x);
 
-		frameId = (frameId + deltaTime * 10.f);
+		if (timer > 5.0f)
+		{
+			timer -= 5.0f;
+			frameId++;
+		}
 
-		if (frameId > 4.0f)
-			frameId = 1.0f;
+		if (frameId < 1 || frameId > 3)
+			frameId = 1;
 	}
+
+	if (facingLeft)
+		frameId = -frameId;
 }
 
 void Enemy::animate(double deltaTime)
 {
-	frameId = (frameId + deltaTime * 10.0f);
-	if (frameId > 2)
+	timer += deltaTime * 400.f;
+
+	if (timer > 50.0f)
+	{
+		timer -= 50.0f;
+		frameId++;
+	}
+
+	if (frameId > 1)
 		frameId = 0;
 }
 
