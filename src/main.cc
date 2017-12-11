@@ -14,6 +14,7 @@
 #include "gui.h"
 #include "gameObject.h"
 #include "sprites.h"
+#include "level.h"
 
 using namespace std;
 
@@ -87,13 +88,13 @@ int main(int argc, char* argv[])
 
 	GLuint textureID;
 	glGenTextures(1, &textureID);
-	
+
 	// "Bind" the newly created texture : all future texture functions will modify this texture
 	glBindTexture(GL_TEXTURE_2D, textureID);
-	
+
 	// Give the image to OpenGL
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, gameTextures.width, gameTextures.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, &gameTextures.bytes[0]);
-	
+
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -185,10 +186,12 @@ int main(int argc, char* argv[])
 	double lastTime = glfwGetTime();
 	double deltaTime = 0;
 
-	objects.push_back(make_shared<Player>(glm::vec2(400, 300), 0, glm::vec2(100, 200), 0));
+	readInLevel("../assets/level1.txt");
+
+	/*objects.push_back(make_shared<Player>(glm::vec2(400, 300), 0, glm::vec2(100, 200), 0));
 
 	objects.push_back(make_shared<Enemy>(glm::vec2(100, 200), 0, glm::vec2(100, 100), 1));
-	objects.push_back(make_shared<Enemy>(glm::vec2(100, 50), 0, glm::vec2(100, 100), 1));
+	objects.push_back(make_shared<Enemy>(glm::vec2(100, 50), 0, glm::vec2(100, 100), 1));*/
 	/*for (int i = 0; i < 1000; i++)
 	{
 		objects.push_back(make_shared<Enemy>(glm::vec2((i * 20) % 800, ((i * 20) / 800) * 20), 0, glm::vec2(16, 32), 0));
