@@ -118,24 +118,33 @@ void Player::run(double deltaTime)
 
 void Player::animate(double deltaTime)
 {
+	if (facingLeft)
+		frameId = -frameId;
+	
 	if (!isResting)
 	{
 		frameId = 5;
 	}
-	else if (velocity.x < 3.f)
+	else if (fabs(velocity.x) < 3.f)
 	{
 		frameId = 0;
 	}
 	else
 	{
-		if (frameId < 1.0f)
-			frameId = 1.0f;
-		
-		frameId = (frameId + deltaTime * 10.f);
+		timer += deltaTime * fabs(velocity.x);
 
-		if (frameId > 4.0f)
-			frameId = 1.0f;
+		if (timer > 50.0f)
+		{
+			timer -= 50.0f;
+			frameId++;
+		}
+
+		if (frameId < 1 || frameId > 3)
+			frameId = 1;
 	}
+
+	if (facingLeft)
+		frameId = -frameId;
 }
 
 void Enemy::animate(double deltaTime)

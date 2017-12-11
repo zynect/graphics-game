@@ -52,7 +52,9 @@ protected:
 		unsigned int zIndex:4;
 	} key;
 
-	float frameId;
+	int frameId;
+	bool facingLeft;
+	float timer;
 	glm::vec2 size;
 	float angle;
 };
