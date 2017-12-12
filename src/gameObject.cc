@@ -38,20 +38,20 @@ bool GameObject::checkCollision(const std::shared_ptr<GameObject>& obj)
 
 actions GameObject::repelFrom(const std::shared_ptr<GameObject>& obj)
 {
-	int thisAbove = (this->position.y + this->size.y) - obj->position.y;
-	int thisBelow = (obj->position.y + obj->size.y) - this->position.y;
-	int thisLeft = (this->position.x + this->size.x) - obj->position.x;
-	int thisRight = (obj->position.x + obj->size.x) - this->position.x;
-	if(thisAbove < thisBelow && thisAbove < thisRight && thisAbove < thisLeft)	{
+	float thisAbove = (this->position.y + this->size.y) - obj->position.y;
+	float thisBelow = (obj->position.y + obj->size.y) - this->position.y;
+	float thisLeft = (this->position.x + this->size.x) - obj->position.x;
+	float thisRight = (obj->position.x + obj->size.x) - this->position.x;
+	if(thisAbove <= thisBelow && thisAbove <= thisRight && thisAbove <= thisLeft)	{
 		this->position.y = obj->position.y - this->size.y;
 		return UP;
-	}	else if (thisBelow < thisAbove && thisBelow < thisRight && thisBelow < thisLeft) {
+	}	else if (thisBelow <= thisAbove && thisBelow <= thisRight && thisBelow <= thisLeft) {
 		this->position.y = obj->position.y + obj->size.y;
 		return DOWN;
-	}	else if(thisLeft < thisAbove && thisLeft < thisBelow && thisLeft < thisRight)	{
+	}	else if(thisLeft <= thisAbove && thisLeft <= thisBelow && thisLeft <= thisRight)	{
 		this->position.x = obj->position.x - this->size.x;
 		return LEFT;
-	}	else if(thisRight < thisAbove && thisRight < thisBelow && thisRight < thisLeft)	{
+	}	else if(thisRight <= thisAbove && thisRight <= thisBelow && thisRight <= thisLeft)	{
 		this->position.x = obj->position.x + obj->size.x;
 		return RIGHT;
 	} else {

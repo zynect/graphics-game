@@ -11,9 +11,9 @@ const float horizAccel = 200;
 const float maxYVelocity = 400;
 const float maxXVelocity = 150;
 const float maxXRunVelocity = 250;
-const float maxJumpVelocity = 80;
-const float jumpVelocity = 400;
-const float jumpHoldBoost = 300;
+const float maxJumpVelocity = 400;
+const float jumpVelocity = 200;
+const float jumpHoldBoost = 150;
 
 enum actions {
 	NONE,
