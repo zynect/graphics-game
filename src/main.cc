@@ -19,7 +19,7 @@
 using namespace std;
 
 const string window_title = "Game";
-const int initial_window_width = 640, initial_window_height = 600;
+const int initial_window_width = 768, initial_window_height = 720;
 
 const char* vertex_shader =
 #include "shaders/texture.vert"
@@ -197,7 +197,7 @@ int main(int argc, char* argv[])
 		objects.push_back(make_shared<Enemy>(glm::vec2((i * 20) % 800, ((i * 20) / 800) * 20), 0, glm::vec2(16, 32), 0));
 	}*/
 
-	gui.scaleGame(2.5f);
+	gui.scaleGame(3.f);
 
 	while (!glfwWindowShouldClose(window)) {
 		// Measure speed
