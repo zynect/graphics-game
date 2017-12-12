@@ -51,40 +51,32 @@ void GUI::keyCallback(int key, int scancode, int action, int mods)
 	} else*/
 	if (key == GLFW_KEY_A || key == GLFW_KEY_LEFT) {
 		if (action == GLFW_RELEASE) {
-			pressed.left = 0;
+			pressed.left = false;
 		} else if(action == GLFW_PRESS) {
-			pressed.left = 1;
+			pressed.left = true;
 		}
 	}
 	else if (key == GLFW_KEY_D || key == GLFW_KEY_RIGHT) {
 		if (action == GLFW_RELEASE) {
-			pressed.right = 0;
+			pressed.right = false;
 		} else if(action == GLFW_PRESS) {
-			pressed.right = 1;
+			pressed.right = true;
 		}
 	}
 
-	if(pressed.right == 1){
-		activeAction = RIGHT;
-	} else if(pressed.left == 1){
-		activeAction = LEFT;
-	} else{
-		activeAction = NONE;
-	}
-
 	if(key == GLFW_KEY_SPACE){
-		if(action == GLFW_PRESS){
-			isJumping = true;
-		} else if(action == GLFW_RELEASE) {
-			isJumping = false;
+		if(action == GLFW_RELEASE){
+			pressed.jump = false;
+		} else if(action == GLFW_PRESS) {
+			pressed.jump = true;
 		}
 	}
 
 	if(key == GLFW_KEY_LEFT_SHIFT){
 		if(action == GLFW_RELEASE){
-			isRunning = false;
-		} else {
-			isRunning = true;
+			pressed.run = false;
+		} else if(action == GLFW_PRESS) {
+			pressed.run = true;
 		}
 	}
 }

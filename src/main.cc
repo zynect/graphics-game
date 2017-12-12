@@ -230,12 +230,28 @@ int main(int argc, char* argv[])
 						&model[0][0]));
 
 			CHECK_GL_ERROR(glBindBuffer(GL_ARRAY_BUFFER, g_buffer_objects[kGeometryVao][kUVBuffer]));
-			unsigned int textureId;
-			unsigned int frameId;
+			int textureId;
+			int frameId;
 			obj->getCurrentSprite(textureId, frameId);
 
+			std::vector<glm::vec2> spriteFrame;
+			if (frameId < 0)
+			{
+				spriteFrame.push_back(frames[sprites[textureId][-frameId - 1] + 1]);
+				spriteFrame.push_back(frames[sprites[textureId][-frameId - 1]]);
+				spriteFrame.push_back(frames[sprites[textureId][-frameId - 1] + 3]);
+				spriteFrame.push_back(frames[sprites[textureId][-frameId - 1] + 2]);
+			}
+			else
+			{
+				spriteFrame.push_back(frames[sprites[textureId][frameId]]);
+				spriteFrame.push_back(frames[sprites[textureId][frameId] + 1]);
+				spriteFrame.push_back(frames[sprites[textureId][frameId] + 2]);
+				spriteFrame.push_back(frames[sprites[textureId][frameId] + 3]);
+			}
+
 			CHECK_GL_ERROR(glBufferData(GL_ARRAY_BUFFER,
-						sizeof(float) * triangles.size() * 2, &frames[sprites[textureId][frameId]][0],
+						sizeof(float) * triangles.size() * 2, &spriteFrame[0],
 						GL_STATIC_DRAW));
 
 			CHECK_GL_ERROR(glDrawElements(GL_TRIANGLES, faces.size() * 3, GL_UNSIGNED_INT, 0));

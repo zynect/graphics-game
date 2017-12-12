@@ -23,9 +23,12 @@ enum actions {
 	DOWN
 };
 
-extern int activeAction;
-extern bool isRunning;
-extern bool isJumping;
+extern struct Actions {
+	unsigned int left:1;
+	unsigned int right:1;
+	unsigned int jump:1;
+	unsigned int run:1;
+} pressed;
 
 class GameObject {
 public:
@@ -37,7 +40,7 @@ public:
 	glm::mat4 modelMatrix();
 	bool checkCollision(const std::shared_ptr<GameObject>& obj);
 	actions repelFrom(const std::shared_ptr<GameObject>& obj);
-	void getCurrentSprite(unsigned int& textureId, unsigned int& frame)
+	void getCurrentSprite(int& textureId, int& frame)
 	{
 		textureId = key.textureId;
 		frame = frameId;
@@ -90,7 +93,8 @@ public:
 
 private:
 	void updatePosition(double deltaTime, int move);
-	bool firstJump = false;
+	bool heldJump = false;
+	bool isJumping = false;
 };
 
 class Enemy : public Entity {

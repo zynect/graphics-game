@@ -3,9 +3,7 @@
 #include <iostream>
 #include "gameObject.h"
 
-int activeAction = NONE;
-bool isRunning = false;
-bool isJumping = false;
+struct Actions pressed;
 
 glm::mat4 GameObject::modelMatrix()
 {
@@ -70,7 +68,7 @@ void Entity::collide(const std::shared_ptr<GameObject>& obj)
 	else
 	{
 		int action = repelFrom(obj);
-		if(action == UP || action == DOWN) {
+		if(action == UP) {
 			isResting = true;
 			velocity.y = 0;
 		} else {
@@ -114,16 +112,21 @@ void Entity::checkForCollisions()
 
 void Player::run(double deltaTime)
 {
-	updatePosition(deltaTime, activeAction);
+	int move = NONE;
+	if (pressed.right)
+		move = RIGHT;
+	else if (pressed.left)
+		move = LEFT;
+	updatePosition(deltaTime, move);
 	animate(deltaTime);
 }
 
 void Player::animate(double deltaTime)
 {
-	if (facingLeft)
-		frameId = -frameId;
+	if (frameId < 0)
+		frameId = -frameId - 1;
 	
-	if (!isResting)
+	if (isJumping)
 	{
 		frameId = 5;
 	}
@@ -131,7 +134,7 @@ void Player::animate(double deltaTime)
 	{
 		frameId = 0;
 	}
-	else
+	/*else
 	{
 		timer += deltaTime * fabs(velocity.x);
 
@@ -143,10 +146,10 @@ void Player::animate(double deltaTime)
 
 		if (frameId < 1 || frameId > 3)
 			frameId = 1;
-	}
+	}*/
 
 	if (facingLeft)
-		frameId = -frameId;
+		frameId = -frameId - 1;
 }
 
 void Enemy::animate(double deltaTime)
@@ -169,7 +172,7 @@ void Player::updatePosition(double deltaTime, int move)
 
 	if (move == LEFT)
 	{
-		if((isRunning && velocity.x > -maxXRunVelocity) || (!isRunning && velocity.x > -maxXVelocity))
+		if((pressed.run && velocity.x > -maxXRunVelocity) || (!pressed.run && velocity.x > -maxXVelocity))
 		{
 			if(velocity.x > 0){
 				velocity.x /= friction;
@@ -179,7 +182,7 @@ void Player::updatePosition(double deltaTime, int move)
 	}
 	else if (move == RIGHT)
 	{
-		if((isRunning && velocity.x < maxXRunVelocity) || (!isRunning && velocity.x < maxXVelocity))
+		if((pressed.run && velocity.x < maxXRunVelocity) || (!pressed.run && velocity.x < maxXVelocity))
 		{
 			if(velocity.x < 0){
 				velocity.x /= friction;
@@ -192,27 +195,40 @@ void Player::updatePosition(double deltaTime, int move)
 		velocity.x /= friction;
 	}
 
+	if (!isJumping)
+	{
+		if (velocity.x > 0.1f)
+			facingLeft = false;
+		else if (velocity.x < -0.1f)
+			facingLeft = true;
+	}
+
 	//Jumping
-	if (!isJumping){
-		firstJump = false;
+	if (!pressed.jump){
+		heldJump = false;
 	}
 	else {
 		if(isResting) {
-			firstJump = true;
+			heldJump = true;
 			isResting = false;
+			isJumping = true;
 			velocity.y = -jumpVelocity;
 		}
-		else if (firstJump && velocity.y > -maxJumpVelocity) {
+		else if (heldJump && velocity.y > -maxJumpVelocity) {
 			velocity.y -= jumpHoldBoost;
 		}
-		else {
-			isJumping = false;
+		else
+		{
+			heldJump = false;
 		}
 	}
 
 	calcGravity(deltaTime);
 	position += velocity * dt;
 	checkForCollisions();
+
+	if (isResting)
+		isJumping = false;
 }
 
 void Enemy::run(double deltaTime)
