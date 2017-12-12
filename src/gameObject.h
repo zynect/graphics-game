@@ -64,6 +64,14 @@ protected:
 
 extern std::vector<std::shared_ptr<GameObject>> objects;
 
+class Platform : public GameObject {
+public:
+	Platform() = delete;
+	Platform(glm::vec2 pos, unsigned int z, glm::vec2 s, unsigned int id, float a = 0.0f) : GameObject(pos, z, s, id, a) {}
+	void run(double deltaTime) {}
+	void collide(const std::shared_ptr<GameObject>& obj) {}
+};
+
 class Entity : public GameObject {
 public:
 	Entity() = delete;

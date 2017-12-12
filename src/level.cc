@@ -15,6 +15,9 @@ void readInLevel (const std::string& level){
 
   while(getline(infile, line))
   {
+      if (line[0] == '#')
+        continue;
+
       std::stringstream stream(line);
 
       if (name == 0){
@@ -34,9 +37,13 @@ void readInLevel (const std::string& level){
             stream >> x >> y >> w >> h;
             objects.push_back(std::make_shared<Player>(glm::vec2(x, y), 0, glm::vec2(w, h), 0));
           }
-          if(name == 'E'){
+          else if(name == 'E'){
             stream >> x >> y >> w;
             objects.push_back(std::make_shared<Enemy>(glm::vec2(x, y), 0, glm::vec2(w, w), 1));
+          }
+          else if(name == 'F'){
+            stream >> x >> y >> w;
+            objects.push_back(std::make_shared<Platform>(glm::vec2(x, y), 0, glm::vec2(w, w), 2));
           }
       }
   }
