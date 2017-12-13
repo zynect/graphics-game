@@ -105,6 +105,7 @@ void Player::collide(const std::shared_ptr<GameObject>& obj)
 			Enemy& en = dynamic_cast<Enemy&>(*obj);
 			if(action == UP) {
 				velocity.y = -enemyBounce;
+				en.die();
 			} else {
 				//die
 			}
@@ -167,6 +168,11 @@ void Player::animate(double deltaTime)
 void Enemy::animate(double deltaTime)
 {
 	timer += deltaTime * 400.f;
+
+	if(isDead){
+		frameId = 2;
+		return;
+	}
 
 	if (timer > 50.0f)
 	{
@@ -247,6 +253,11 @@ void Enemy::run(double deltaTime)
 {
 	updatePosition(deltaTime, direction);
 	animate(deltaTime);
+}
+
+void Enemy::die()
+{
+	isDead = true;
 }
 
 void Enemy::collide(const std::shared_ptr<GameObject>& obj)
