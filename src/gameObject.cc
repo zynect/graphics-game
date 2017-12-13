@@ -134,7 +134,7 @@ void Player::animate(double deltaTime)
 	{
 		frameId = 0;
 	}
-	/*else
+	else
 	{
 		timer += deltaTime * fabs(velocity.x);
 
@@ -146,7 +146,7 @@ void Player::animate(double deltaTime)
 
 		if (frameId < 1 || frameId > 3)
 			frameId = 1;
-	}*/
+	}
 
 	if (facingLeft)
 		frameId = -frameId - 1;
@@ -214,7 +214,8 @@ void Player::updatePosition(double deltaTime, int move)
 			isJumping = true;
 			velocity.y = -jumpVelocity;
 		}
-		else if (heldJump && velocity.y > -maxJumpVelocity) {
+		else if (heldJump && -velocity.y < maxJumpVelocity) {
+			//std::cout << velocity.y << std::endl;
 			velocity.y -= jumpHoldBoost;
 		}
 		else

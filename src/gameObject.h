@@ -6,14 +6,14 @@
 #include <memory>
 
 const float friction = 1.2f;
-const float gravity = 1000;
+const float gravity = 1500;
 const float horizAccel = 200;
 const float maxYVelocity = 400;
 const float maxXVelocity = 150;
 const float maxXRunVelocity = 250;
 const float maxJumpVelocity = 400;
-const float jumpVelocity = 200;
-const float jumpHoldBoost = 150;
+const float jumpVelocity = 300;
+const float jumpHoldBoost = 15;
 
 enum actions {
 	NONE,
