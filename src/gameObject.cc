@@ -105,6 +105,7 @@ void Player::collide(const std::shared_ptr<GameObject>& obj)
 			Enemy& en = dynamic_cast<Enemy&>(*obj);
 			if(action == UP) {
 				velocity.y = -enemyBounce;
+				en.die();
 			} else {
 				//die
 			}
@@ -146,7 +147,7 @@ void Player::animate(double deltaTime)
 	{
 		frameId = 0;
 	}
-	/*else
+	else
 	{
 		timer += deltaTime * fabs(velocity.x);
 
@@ -158,7 +159,7 @@ void Player::animate(double deltaTime)
 
 		if (frameId < 1 || frameId > 3)
 			frameId = 1;
-	}*/
+	}
 
 	if (facingLeft)
 		frameId = -frameId - 1;
@@ -167,6 +168,11 @@ void Player::animate(double deltaTime)
 void Enemy::animate(double deltaTime)
 {
 	timer += deltaTime * 400.f;
+
+	if(isDead){
+		frameId = 2;
+		return;
+	}
 
 	if (timer > 50.0f)
 	{
@@ -226,7 +232,8 @@ void Player::updatePosition(double deltaTime, int move)
 			isJumping = true;
 			velocity.y = -jumpVelocity;
 		}
-		else if (heldJump && velocity.y > -maxJumpVelocity) {
+		else if (heldJump && -velocity.y < maxJumpVelocity) {
+			//std::cout << velocity.y << std::endl;
 			velocity.y -= jumpHoldBoost;
 		}
 		else {
@@ -246,6 +253,11 @@ void Enemy::run(double deltaTime)
 {
 	updatePosition(deltaTime, direction);
 	animate(deltaTime);
+}
+
+void Enemy::die()
+{
+	isDead = true;
 }
 
 void Enemy::collide(const std::shared_ptr<GameObject>& obj)
