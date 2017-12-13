@@ -179,15 +179,6 @@ void Enemy::animate(double deltaTime)
 
 	if(isDead){
 		frameId = 2;
-		if(timer > 100.0f){
-			//remove the enemy from objects
-			for (int i = 0; i < objects.size(); i++) {
-				if(objects[i].get() == this) {
-					objects.erase(objects.begin() + i);
-					break;
-				}
-			}
-		}
 		return;
 	}
 
@@ -268,7 +259,16 @@ void Player::updatePosition(double deltaTime, int move)
 
 void Enemy::run(double deltaTime)
 {
-	if(!isDead){
+	if(isDead && timer > 80.0f) {
+		//remove the enemy from objects
+		for (int i = 0; i < objects.size(); i++) {
+			if(objects[i].get() == this) {
+				objects.erase(objects.begin() + i);
+				break;
+			}
+		}
+	}
+	else if (!isDead) {
 		updatePosition(deltaTime, direction);
 	}
 	animate(deltaTime);
@@ -276,9 +276,11 @@ void Enemy::run(double deltaTime)
 
 void Enemy::die()
 {
-	timer = 0.0f;
-	velocity = {0, 0};
-	isDead = true;
+	if(!isDead){
+		timer = 0.0f;
+		velocity = {0, 0};
+		isDead = true;
+	}
 }
 
 void Enemy::collide(const std::shared_ptr<GameObject>& obj)
