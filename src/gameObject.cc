@@ -286,3 +286,24 @@ void Enemy::updatePosition(double deltaTime, int move)
 	position += velocity * dt;
 	checkForCollisions();
 }
+
+void Coin::collide(const std::shared_ptr<GameObject>& obj)
+{
+	if(obj == nullptr)
+	{
+		isResting = false;
+	}
+	else
+	{
+		int action = repelFrom(obj);
+		if(action == UP) {
+			isResting = true;
+			velocity.y = 0;
+		} else if (action == DOWN) {
+			velocity.y = 0;
+		} else {
+			//velocity.x = -velocity.x;
+			direction = (direction == LEFT) ? RIGHT : LEFT;
+		}
+	}
+}
