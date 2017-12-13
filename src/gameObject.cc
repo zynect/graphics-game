@@ -251,12 +251,20 @@ void Player::updatePosition(double deltaTime, int move)
 
 void Enemy::run(double deltaTime)
 {
-	updatePosition(deltaTime, direction);
-	animate(deltaTime);
+	if(isDead && timer > 40){
+		//Somehow remove the enemy from objects
+		//std::shared_ptr<Enemy> ptr(this);
+		//objects.erase(std::remove(objects.begin(), objects.end(), ptr), objects.end());
+	}
+	else{
+		updatePosition(deltaTime, direction);
+		animate(deltaTime);
+	}
 }
 
 void Enemy::die()
 {
+	velocity = {0, 0};
 	isDead = true;
 }
 
@@ -284,7 +292,6 @@ void Enemy::collide(const std::shared_ptr<GameObject>& obj)
 void Enemy::updatePosition(double deltaTime, int move)
 {
 	float dt = static_cast<float>(deltaTime);
-
 	if (move == LEFT)
 	{
 		velocity.x = -movespeed;
