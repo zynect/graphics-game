@@ -129,13 +129,14 @@ private:
 class Coin : public Entity {
 public: 
 	Coin() = delete;
-	Coin(glm::vec2 pos, unsigned int z, glm::vec2 s, unsigned int id, float a = 0.0f) : GameObject(pos, z, s, id, a) {}
+	Coin(glm::vec2 pos, unsigned int z, glm::vec2 s, unsigned int id, float a = 0.0f) : Entity(pos, z, s, id, a) {}
 	void run(double deltaTime) {}
-	void animate(double deltaTime);
+	void animate(double deltaTime) {}
 	void collide(const std::shared_ptr<GameObject>& obj);
+	void die();
 
 private:
 	void updatePosition(double deltaTime, int move) {}
-}
+};
 
 #endif

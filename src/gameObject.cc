@@ -301,21 +301,14 @@ void Enemy::updatePosition(double deltaTime, int move)
 
 void Coin::collide(const std::shared_ptr<GameObject>& obj)
 {
-	if(obj == nullptr)
-	{
-		isResting = false;
+	try {
+		Player& p = dynamic_cast<Player&>(*obj);
+		die();
 	}
-	else
-	{
-		int action = repelFrom(obj);
-		if(action == UP) {
-			isResting = true;
-			velocity.y = 0;
-		} else if (action == DOWN) {
-			velocity.y = 0;
-		} else {
-			//velocity.x = -velocity.x;
-			direction = (direction == LEFT) ? RIGHT : LEFT;
-		}
-	}
+	catch(const std::bad_cast& e) {}
+}
+
+void Coin::die()
+{
+	
 }
