@@ -181,7 +181,7 @@ void Enemy::animate(double deltaTime)
 		frameId = 2;
 		if(timer > 100.0f){
 			//remove the enemy from objects
-			for (int i = 0; i < objects.size(); i++) {
+			for (unsigned int i = 0; i < objects.size(); i++) {
 				if(objects[i].get() == this) {
 					objects.erase(objects.begin() + i);
 					break;
@@ -330,5 +330,11 @@ void Coin::collide(const std::shared_ptr<GameObject>& obj)
 
 void Coin::die()
 {
-	
+	std::cout << "Call me\n";
+	for (unsigned int i = 0; i < objects.size(); i++) {
+		if(objects[i].get() == this) {
+			objects.erase(objects.begin() + i);
+			break;
+		}
+	}
 }
