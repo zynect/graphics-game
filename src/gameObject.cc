@@ -42,20 +42,27 @@ actions GameObject::repelFrom(const std::shared_ptr<GameObject>& obj)
 	float thisBelow = (obj->position.y + obj->size.y) - this->position.y;
 	float thisLeft = (this->position.x + this->size.x) - obj->position.x;
 	float thisRight = (obj->position.x + obj->size.x) - this->position.x;
-	if(thisAbove <= thisBelow && thisAbove <= thisRight && thisAbove <= thisLeft)	{
-		this->position.y = obj->position.y - this->size.y;
-		return UP;
-	}	else if (thisBelow <= thisAbove && thisBelow <= thisRight && thisBelow <= thisLeft) {
-		this->position.y = obj->position.y + obj->size.y;
-		return DOWN;
-	}	else if(thisLeft <= thisAbove && thisLeft <= thisBelow && thisLeft <= thisRight)	{
-		this->position.x = obj->position.x - this->size.x;
-		return LEFT;
-	}	else if(thisRight <= thisAbove && thisRight <= thisBelow && thisRight <= thisLeft)	{
-		this->position.x = obj->position.x + obj->size.x;
-		return RIGHT;
-	} else {
+
+	try {
+		Coin& c = dynamic_cast<Coin&>(*obj);
 		return NONE;
+	}
+	catch(const std::bad_cast& e) {
+		if(thisAbove <= thisBelow && thisAbove <= thisRight && thisAbove <= thisLeft)	{
+			this->position.y = obj->position.y - this->size.y;
+			return UP;
+		}	else if (thisBelow <= thisAbove && thisBelow <= thisRight && thisBelow <= thisLeft) {
+			this->position.y = obj->position.y + obj->size.y;
+			return DOWN;
+		}	else if(thisLeft <= thisAbove && thisLeft <= thisBelow && thisLeft <= thisRight)	{
+			this->position.x = obj->position.x - this->size.x;
+			return LEFT;
+		}	else if(thisRight <= thisAbove && thisRight <= thisBelow && thisRight <= thisLeft)	{
+			this->position.x = obj->position.x + obj->size.x;
+			return RIGHT;
+		} else {
+			return NONE;
+		}
 	}
 }
 
@@ -116,7 +123,7 @@ void Player::collide(const std::shared_ptr<GameObject>& obj)
 				velocity.y = 0;
 			} else if(action == DOWN) {
 				velocity.y = 0;
-			} else {
+			} else if(action == LEFT || action == RIGHT){
 				velocity.x = 0;
 			}
 		}
@@ -251,15 +258,15 @@ void Player::updatePosition(double deltaTime, int move)
 
 void Enemy::run(double deltaTime)
 {
-	if(isDead && timer > 40){
+	if(isDead){
 		//Somehow remove the enemy from objects
 		//std::shared_ptr<Enemy> ptr(this);
 		//objects.erase(std::remove(objects.begin(), objects.end(), ptr), objects.end());
 	}
 	else{
 		updatePosition(deltaTime, direction);
-		animate(deltaTime);
 	}
+	animate(deltaTime);
 }
 
 void Enemy::die()

@@ -47,7 +47,7 @@ void readInLevel (const std::string& level){
           }
           else if(name == 'C'){
             stream >> x >> y >> w;
-            objects.push_back(std::make_shared<Coin>(glm::vec2(x, y), 0, glm::vec2(w, w), 2));
+            objects.push_back(std::make_shared<Coin>(glm::vec2(x, y), 0, glm::vec2(w, w), 3));
           }
       }
   }
