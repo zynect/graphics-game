@@ -45,6 +45,7 @@ actions GameObject::repelFrom(const std::shared_ptr<GameObject>& obj)
 
 	try {
 		Coin& c = dynamic_cast<Coin&>(*obj);
+		c.die();
 		return NONE;
 	}
 	catch(const std::bad_cast& e) {
@@ -179,15 +180,6 @@ void Enemy::animate(double deltaTime)
 
 	if(isDead){
 		frameId = 2;
-		if(timer > 100.0f){
-			//remove the enemy from objects
-			for (unsigned int i = 0; i < objects.size(); i++) {
-				if(objects[i].get() == this) {
-					objects.erase(objects.begin() + i);
-					break;
-				}
-			}
-		}
 		return;
 	}
 
@@ -268,7 +260,16 @@ void Player::updatePosition(double deltaTime, int move)
 
 void Enemy::run(double deltaTime)
 {
-	if(!isDead){
+	if(isDead && timer > 80.0f) {
+		//remove the enemy from objects
+		for (unsigned int i = 0; i < objects.size(); i++) {
+			if(objects[i].get() == this) {
+				objects.erase(objects.begin() + i);
+				break;
+			}
+		}
+	}
+	else if (!isDead) {
 		updatePosition(deltaTime, direction);
 	}
 	animate(deltaTime);
@@ -276,9 +277,11 @@ void Enemy::run(double deltaTime)
 
 void Enemy::die()
 {
-	timer = 0.0f;
-	velocity = {0, 0};
-	isDead = true;
+	if(!isDead){
+		timer = 0.0f;
+		velocity = {0, 0};
+		isDead = true;
+	}
 }
 
 void Enemy::collide(const std::shared_ptr<GameObject>& obj)
@@ -319,22 +322,26 @@ void Enemy::updatePosition(double deltaTime, int move)
 	checkForCollisions();
 }
 
+void Coin::run(double deltaTime)
+{
+	if(isDead)
+	{
+		for (unsigned int i = 0; i < objects.size(); i++) {
+			if(objects[i].get() == this) {
+				objects.erase(objects.begin() + i);
+				break;
+			}
+		}
+	}
+}
+
 void Coin::collide(const std::shared_ptr<GameObject>& obj)
 {
-	try {
-		Player& p = dynamic_cast<Player&>(*obj);
-		die();
-	}
-	catch(const std::bad_cast& e) {}
+
 }
 
 void Coin::die()
 {
-	std::cout << "Call me\n";
-	for (unsigned int i = 0; i < objects.size(); i++) {
-		if(objects[i].get() == this) {
-			objects.erase(objects.begin() + i);
-			break;
-		}
-	}
+	if(!isDead)
+		isDead = true;	
 }
