@@ -14,6 +14,7 @@ const float maxXRunVelocity = 250;
 const float maxJumpVelocity = 400;
 const float jumpVelocity = 200;
 const float jumpHoldBoost = 150;
+const float enemyBounce = 300;
 
 enum actions {
 	NONE,
@@ -79,7 +80,7 @@ public:
 	~Entity() {};
 	virtual void run(double deltaTime) = 0;
 	virtual void animate(double deltaTime) = 0;
-	void collide(const std::shared_ptr<GameObject>& obj);
+	virtual void collide(const std::shared_ptr<GameObject>& obj) = 0;
 
 protected:
 	glm::vec2 velocity;
@@ -98,6 +99,7 @@ public:
 	~Player() {};
 	void run(double deltaTime);
 	void animate(double deltaTime);
+	void collide(const std::shared_ptr<GameObject>& obj);
 
 private:
 	void updatePosition(double deltaTime, int move);
@@ -112,8 +114,11 @@ public:
 	~Enemy() {};
 	void run(double deltaTime);
 	void animate(double deltaTime);
+	void collide(const std::shared_ptr<GameObject>& obj);
 
 private:
+	int movespeed = 20;
+	int direction = LEFT;
 	void updatePosition(double deltaTime, int move);
 };
 

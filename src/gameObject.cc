@@ -59,24 +59,6 @@ actions GameObject::repelFrom(const std::shared_ptr<GameObject>& obj)
 	}
 }
 
-void Entity::collide(const std::shared_ptr<GameObject>& obj)
-{
-	if(obj == nullptr)
-	{
-		isResting = false;
-	}
-	else
-	{
-		int action = repelFrom(obj);
-		if(action == UP) {
-			isResting = true;
-			velocity.y = 0;
-		} else {
-			velocity.x = 0;
-		}
-	}
-}
-
 void Entity::calcGravity(double deltaTime)
 {
 	float dt = static_cast<float>(deltaTime);
@@ -108,6 +90,36 @@ void Entity::checkForCollisions()
 	}
 	if(!hasCollided)
 		collide(nullptr);
+}
+
+void Player::collide(const std::shared_ptr<GameObject>& obj)
+{
+	if(obj == nullptr)
+	{
+		isResting = false;
+	}
+	else
+	{
+		int action = repelFrom(obj);
+		try {
+			Enemy& en = dynamic_cast<Enemy&>(*obj);
+			if(action == UP) {
+				velocity.y = -enemyBounce;
+			} else {
+				//die
+			}
+		}
+		catch(const std::bad_cast& e) {
+			if(action == UP) {
+				isResting = true;
+				velocity.y = 0;
+			} else if(action == DOWN) {
+				velocity.y = 0;
+			} else {
+				velocity.x = 0;
+			}
+		}
+	}
 }
 
 void Player::run(double deltaTime)
@@ -217,8 +229,7 @@ void Player::updatePosition(double deltaTime, int move)
 		else if (heldJump && velocity.y > -maxJumpVelocity) {
 			velocity.y -= jumpHoldBoost;
 		}
-		else
-		{
+		else {
 			heldJump = false;
 		}
 	}
@@ -233,8 +244,29 @@ void Player::updatePosition(double deltaTime, int move)
 
 void Enemy::run(double deltaTime)
 {
-	updatePosition(deltaTime, NONE);
+	updatePosition(deltaTime, direction);
 	animate(deltaTime);
+}
+
+void Enemy::collide(const std::shared_ptr<GameObject>& obj)
+{
+	if(obj == nullptr)
+	{
+		isResting = false;
+	}
+	else
+	{
+		int action = repelFrom(obj);
+		if(action == UP) {
+			isResting = true;
+			velocity.y = 0;
+		} else if (action == DOWN) {
+			velocity.y = 0;
+		} else {
+			//velocity.x = -velocity.x;
+			direction = (direction == LEFT) ? RIGHT : LEFT;
+		}
+	}
 }
 
 void Enemy::updatePosition(double deltaTime, int move)
@@ -243,15 +275,11 @@ void Enemy::updatePosition(double deltaTime, int move)
 
 	if (move == LEFT)
 	{
-		velocity.x = -100;
+		velocity.x = -movespeed;
 	}
 	else if (move == RIGHT)
 	{
-		velocity.x = 100;
-	}
-	else //No movement
-	{
-
+		velocity.x = movespeed;
 	}
 
 	calcGravity(deltaTime);
