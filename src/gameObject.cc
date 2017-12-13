@@ -45,8 +45,7 @@ actions GameObject::repelFrom(const std::shared_ptr<GameObject>& obj)
 
 	try {
 		Coin& c = dynamic_cast<Coin&>(*obj);
-		c.die();
-		return NONE;
+		return COIN;
 	}
 	catch(const std::bad_cast& e) {
 		if(thisAbove <= thisBelow && thisAbove <= thisRight && thisAbove <= thisLeft)	{
@@ -125,8 +124,12 @@ void Player::collide(const std::shared_ptr<GameObject>& obj)
 				velocity.y = 0;
 			} else if(action == DOWN) {
 				velocity.y = 0;
+				heldJump = false;
 			} else if(action == LEFT || action == RIGHT){
 				velocity.x = 0;
+			} else if(action == COIN){
+				Coin& c = dynamic_cast<Coin&>(*obj);
+				c.die();
 			}
 		}
 	}
@@ -298,8 +301,7 @@ void Enemy::collide(const std::shared_ptr<GameObject>& obj)
 			velocity.y = 0;
 		} else if (action == DOWN) {
 			velocity.y = 0;
-		} else {
-			//velocity.x = -velocity.x;
+		} else if (action == LEFT || action == RIGHT) {
 			direction = (direction == LEFT) ? RIGHT : LEFT;
 		}
 	}
