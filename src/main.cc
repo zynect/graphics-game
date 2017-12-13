@@ -218,7 +218,8 @@ int main(int argc, char* argv[])
 
 		for(shared_ptr<GameObject> obj : objects)
 		{
-			obj->run(deltaTime);
+			if(obj != nullptr)
+				obj->run(deltaTime);
 		}
 
 		sort(objects.begin(), objects.end());

@@ -111,6 +111,7 @@ void Player::collide(const std::shared_ptr<GameObject>& obj)
 		try {
 			Enemy& en = dynamic_cast<Enemy&>(*obj);
 			if(action == UP) {
+				isJumping = true;
 				velocity.y = -enemyBounce;
 				en.die();
 			} else {
@@ -178,6 +179,15 @@ void Enemy::animate(double deltaTime)
 
 	if(isDead){
 		frameId = 2;
+		if(timer > 100.0f){
+			//remove the enemy from objects
+			for (int i = 0; i < objects.size(); i++) {
+				if(objects[i].get() == this) {
+					objects.erase(objects.begin() + i);
+					break;
+				}
+			}
+		}
 		return;
 	}
 
@@ -258,12 +268,7 @@ void Player::updatePosition(double deltaTime, int move)
 
 void Enemy::run(double deltaTime)
 {
-	if(isDead){
-		//Somehow remove the enemy from objects
-		//std::shared_ptr<Enemy> ptr(this);
-		//objects.erase(std::remove(objects.begin(), objects.end(), ptr), objects.end());
-	}
-	else{
+	if(!isDead){
 		updatePosition(deltaTime, direction);
 	}
 	animate(deltaTime);
@@ -271,6 +276,7 @@ void Enemy::run(double deltaTime)
 
 void Enemy::die()
 {
+	timer = 0.0f;
 	velocity = {0, 0};
 	isDead = true;
 }
