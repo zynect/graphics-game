@@ -26,7 +26,9 @@ glm::mat4 GameObject::modelMatrix()
 
 bool GameObject::operator < (const GameObject& obj) const
 {
-	return (*reinterpret_cast<const unsigned int*>(&key) < *reinterpret_cast<const unsigned int*>(&obj.key));
+	unsigned int thisKey = (zIndex << 28) | (textureId & 0xFFFFFFF);
+	unsigned int objKey = (obj.zIndex << 28) | (obj.textureId & 0xFFFFFFF);
+	return thisKey < objKey;
 }
 
 bool GameObject::checkCollision(const std::shared_ptr<GameObject>& obj)
@@ -34,12 +36,12 @@ bool GameObject::checkCollision(const std::shared_ptr<GameObject>& obj)
 	return (this->position.x <= obj->position.x + obj->size.x &&
    	 this->position.x + this->size.x >= obj->position.x &&
    	 this->position.y <= obj->position.y + obj->size.y &&
-   	 this->position.y + this->size.y >= obj->position.y);
+   	 this->position.y + this->size.y >= obj->position.y + 1);
 }
 
 actions GameObject::repelFrom(const std::shared_ptr<GameObject>& obj)
 {
-	float thisAbove = (this->position.y + this->size.y) - obj->position.y;
+	float thisAbove = (this->position.y + this->size.y) - (obj->position.y + 1);
 	float thisBelow = (obj->position.y + obj->size.y) - this->position.y;
 	float thisLeft = (this->position.x + this->size.x) - obj->position.x;
 	float thisRight = (obj->position.x + obj->size.x) - this->position.x;
@@ -50,7 +52,7 @@ actions GameObject::repelFrom(const std::shared_ptr<GameObject>& obj)
 	}
 	catch(const std::bad_cast& e) {
 		if(thisAbove <= thisBelow && thisAbove <= thisRight && thisAbove <= thisLeft)	{
-			this->position.y = obj->position.y - this->size.y;
+			this->position.y = obj->position.y - this->size.y + 1;
 			return UP;
 		}	else if (thisBelow <= thisAbove && thisBelow <= thisRight && thisBelow <= thisLeft) {
 			this->position.y = obj->position.y + obj->size.y;
@@ -80,13 +82,13 @@ void Entity::checkForCollisions()
 {
 	bool hasCollided = false;
 	// temp floor
-	if (position.y + size.y >= 240)
+	/*if (position.y + size.y >= 240)
 	{
 		position.y = 240 - size.y;
 		velocity.y = 0;
 		isResting = true;
 		hasCollided = true;
-	}
+	}*/
 
 	for(const std::shared_ptr<GameObject> &g : objects)
 	{

@@ -37,16 +37,16 @@ extern float flashTimer;
 class GameObject {
 public:
 	GameObject() = delete;
-	GameObject(glm::vec2 pos, unsigned int z, glm::vec2 s, unsigned int id, float a = 0.0f) : position(pos), size(s), angle(), key({.textureId = id, .zIndex = z}), frameId(), facingLeft(), timer() {};
+	GameObject(glm::vec2 pos, unsigned int z, glm::vec2 s, unsigned int id, float a = 0.0f) : position(pos), size(s), angle(), textureId(id), zIndex(z), frameId(), facingLeft(), timer() {};
 	~GameObject() {};
 	virtual void run(double deltaTime) = 0;
 	virtual void collide(const std::shared_ptr<GameObject>& obj) = 0;
 	glm::mat4 modelMatrix();
 	bool checkCollision(const std::shared_ptr<GameObject>& obj);
 	actions repelFrom(const std::shared_ptr<GameObject>& obj);
-	void getCurrentSprite(int& textureId, int& frame)
+	void getCurrentSprite(int& texture, int& frame)
 	{
-		textureId = key.textureId;
+		texture = textureId;
 		frame = frameId;
 	};
 
@@ -54,10 +54,8 @@ public:
 
 protected:
 	glm::vec2 position;
-	struct {
-		unsigned int textureId:28;
-		unsigned int zIndex:4;
-	} key;
+	int textureId;
+	int zIndex;
 
 	int frameId;
 	bool facingLeft;
