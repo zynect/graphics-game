@@ -39,7 +39,7 @@ bool GameObject::checkCollision(const std::shared_ptr<GameObject>& obj)
    	 this->position.y + this->size.y >= obj->position.y + 1);
 }
 
-actions GameObject::repelFrom(const std::shared_ptr<GameObject>& obj, glm::vec2 velocity)
+actions GameObject::testCollision(const std::shared_ptr<GameObject>& obj, glm::vec2 velocity)
 {
 	int thisAbove = (this->position.y + this->size.y) - (obj->position.y + 1);
 	int thisBelow = (obj->position.y + obj->size.y) - this->position.y;
@@ -58,20 +58,33 @@ actions GameObject::repelFrom(const std::shared_ptr<GameObject>& obj, glm::vec2 
 	catch(const std::bad_cast& e) {}
 
 	if(thisAbove < thisBelow && thisAbove < thisRight && thisAbove < thisLeft) {
-		this->position.y = obj->position.y - this->size.y + 1;
 		return UP;
 	} else if (thisBelow < thisAbove && thisBelow < thisRight && thisBelow < thisLeft) {
-		this->position.y = obj->position.y + obj->size.y;
 		return DOWN;
 	} else if(thisLeft < thisAbove && thisLeft < thisBelow && thisLeft < thisRight && velocity.x >= 0) {
-		this->position.x = obj->position.x - this->size.x;
 		return LEFT;
 	} else if(thisRight < thisAbove && thisRight < thisBelow && thisRight < thisLeft && velocity.x <= 0) {
-		this->position.x = obj->position.x + obj->size.x;
 		return RIGHT;
 	} else {
 		return NONE;
 	}
+}
+
+actions GameObject::repelFrom(const std::shared_ptr<GameObject>& obj, glm::vec2 velocity)
+{
+	actions action = testCollision(obj, velocity);
+	
+	if(action == UP) {
+		this->position.y = obj->position.y - this->size.y + 1;
+	} else if (action == DOWN) {
+		this->position.y = obj->position.y + obj->size.y;
+	} else if(action == LEFT) {
+		this->position.x = obj->position.x - this->size.x;
+	} else if(action == RIGHT) {
+		this->position.x = obj->position.x + obj->size.x;
+	}
+
+	return action;
 }
 
 void Entity::calcGravity(double deltaTime)
@@ -122,6 +135,11 @@ void Player::changePowerUpState(int change)
 		return;
 	}
 
+	if (change < 0)
+	{
+		invincibleTimer = 3;
+	}
+
 	if (powerUpState == 0)
 	{
 		size.y = 16;
@@ -162,18 +180,19 @@ void Player::collide(const std::shared_ptr<GameObject>& obj)
 			isResting = false;
 		}
 		catch(const std::bad_cast& e) { 
-			int action = repelFrom(obj, velocity);
 			try {
 				Enemy& en = dynamic_cast<Enemy&>(*obj);
+				int action = testCollision(obj, velocity);
 				if(action == UP) {
 					isJumping = true;
 					velocity.y = -enemyBounce;
 					en.die();
-				} else {
+				} else if (invincibleTimer <= 0) {
 					changePowerUpState(-1);
 				}
 			}
 			catch(const std::bad_cast& e) {
+				int action = repelFrom(obj, velocity);
 				if(action == UP) {
 					isResting = true;
 					velocity.y = 0;
@@ -215,20 +234,30 @@ void Player::animate(double deltaTime)
 {
 	if (powerUpState < 0)
 	{
-		frameId = 13;
+		frameId = 14;
 		return;
 	}
 
+	if (invincibleTimer > 0)
+	{
+		invincibleTimer -= deltaTime;
+		if (frameId != 0)
+		{
+			frameId = 0;
+			return;
+		}
+	}
+
 	if (frameId < 0)
-		frameId = -frameId - 1;
+		frameId = -frameId;
 
 	if (isJumping)
 	{
-		frameId = 5;
+		frameId = 6;
 	}
 	else if (fabs(velocity.x) < 3.f)
 	{
-		frameId = 0;
+		frameId = 1;
 	}
 	else
 	{
@@ -240,12 +269,12 @@ void Player::animate(double deltaTime)
 			frameId++;
 		}
 
-		if (frameId < 1 || frameId > 3)
-			frameId = 1;
+		if (frameId < 2 || frameId > 4)
+			frameId = 2;
 	}
 
 	if (facingLeft)
-		frameId = -frameId - 1;
+		frameId = -frameId;
 }
 
 void Enemy::animate(double deltaTime)
@@ -260,7 +289,7 @@ void Enemy::animate(double deltaTime)
 	if (timer > 50.0f)
 	{
 		timer -= 50.0f;
-		frameId = -frameId - 1;
+		frameId = -frameId;
 	}
 }
 
@@ -366,14 +395,19 @@ void Enemy::collide(const std::shared_ptr<GameObject>& obj)
 	}
 	else
 	{
-		int action = repelFrom(obj, velocity);
-		if(action == UP) {
-			isResting = true;
-			velocity.y = 0;
-		} else if (action == DOWN) {
-			velocity.y = 0;
-		} else if (action == LEFT || action == RIGHT) {
-			direction = (direction == LEFT) ? RIGHT : LEFT;
+		try {
+			Player& ply = dynamic_cast<Player&>(*obj);
+		}
+		catch(const std::bad_cast& e) {
+			int action = repelFrom(obj, velocity);
+			if(action == UP) {
+				isResting = true;
+				velocity.y = 0;
+			} else if (action == DOWN) {
+				velocity.y = 0;
+			} else if (action == LEFT || action == RIGHT) {
+				direction = (direction == LEFT) ? RIGHT : LEFT;
+			}
 		}
 	}
 }
@@ -417,11 +451,11 @@ void Coin::die()
 
 void Coin::animate(double deltaTime)
 {
-	frameId = std::floor(flashTimer);
+	frameId = std::floor(flashTimer) + 1;
 
-	if (frameId > 2)
+	if (frameId > 3)
 	{
-		frameId = -frameId + 4;
+		frameId = -frameId + 6;
 	}
 }
 

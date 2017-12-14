@@ -38,13 +38,14 @@ extern float flashTimer;
 class GameObject {
 public:
 	GameObject() = delete;
-	GameObject(glm::vec2 pos, unsigned int z, glm::vec2 s, unsigned int id, float a = 0.0f) : position(pos), size(s), angle(), textureId(id), zIndex(z), frameId(), facingLeft(), timer() {};
+	GameObject(glm::vec2 pos, unsigned int z, glm::vec2 s, unsigned int id, float a = 0.0f) : position(pos), size(s), angle(), textureId(id), zIndex(z), frameId(1), facingLeft(), timer() {};
 	~GameObject() {};
 	virtual void run(double deltaTime) = 0;
 	virtual void collide(const std::shared_ptr<GameObject>& obj) = 0;
 	glm::mat4 modelMatrix();
 	bool checkCollision(const std::shared_ptr<GameObject>& obj);
 	actions repelFrom(const std::shared_ptr<GameObject>& obj, glm::vec2 velocity);
+	actions testCollision(const std::shared_ptr<GameObject>& obj, glm::vec2 velocity);
 	void getCurrentSprite(int& texture, int& frame)
 	{
 		texture = textureId;
@@ -121,6 +122,7 @@ private:
 	bool heldJump = false;
 	bool isJumping = false;
 	int powerUpState = 0;
+	float invincibleTimer = 0;
 };
 
 class Enemy : public Entity {
