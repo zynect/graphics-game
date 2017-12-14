@@ -43,7 +43,7 @@ public:
 	virtual void collide(const std::shared_ptr<GameObject>& obj) = 0;
 	glm::mat4 modelMatrix();
 	bool checkCollision(const std::shared_ptr<GameObject>& obj);
-	actions repelFrom(const std::shared_ptr<GameObject>& obj);
+	actions repelFrom(const std::shared_ptr<GameObject>& obj, glm::vec2 velocity);
 	void getCurrentSprite(int& textureId, int& frame)
 	{
 		textureId = key.textureId;

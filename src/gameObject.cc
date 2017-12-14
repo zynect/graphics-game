@@ -1,6 +1,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform.hpp>
 #include <iostream>
+#include <math.h>
 #include "gameObject.h"
 
 struct Actions pressed;
@@ -37,28 +38,32 @@ bool GameObject::checkCollision(const std::shared_ptr<GameObject>& obj)
    	 this->position.y + this->size.y >= obj->position.y);
 }
 
-actions GameObject::repelFrom(const std::shared_ptr<GameObject>& obj)
+actions GameObject::repelFrom(const std::shared_ptr<GameObject>& obj, glm::vec2 velocity)
 {
-	float thisAbove = (this->position.y + this->size.y) - obj->position.y;
-	float thisBelow = (obj->position.y + obj->size.y) - this->position.y;
-	float thisLeft = (this->position.x + this->size.x) - obj->position.x;
-	float thisRight = (obj->position.x + obj->size.x) - this->position.x;
+	int thisAbove = (this->position.y + this->size.y) - obj->position.y;
+	int thisBelow = (obj->position.y + obj->size.y) - this->position.y;
+	int thisLeft = (this->position.x + this->size.x) - obj->position.x;
+	int thisRight = (obj->position.x + obj->size.x) - this->position.x;
+	/*thisAbove = roundf(thisAbove * 10) / 10;
+	thisBelow = roundf(thisBelow * 10) / 10;
+	thisLeft = roundf(thisLeft * 10) / 10;
+	thisRight = roundf(thisRight * 10) / 10;*/
 
 	try {
 		Coin& c = dynamic_cast<Coin&>(*obj);
 		return COIN;
 	}
 	catch(const std::bad_cast& e) {
-		if(thisAbove <= thisBelow && thisAbove <= thisRight && thisAbove <= thisLeft)	{
+		if(thisAbove < thisBelow && thisAbove < thisRight && thisAbove < thisLeft) {
 			this->position.y = obj->position.y - this->size.y;
 			return UP;
-		}	else if (thisBelow <= thisAbove && thisBelow <= thisRight && thisBelow <= thisLeft) {
+		} else if (thisBelow < thisAbove && thisBelow < thisRight && thisBelow < thisLeft) {
 			this->position.y = obj->position.y + obj->size.y;
 			return DOWN;
-		}	else if(thisLeft <= thisAbove && thisLeft <= thisBelow && thisLeft <= thisRight)	{
+		} else if(thisLeft < thisAbove && thisLeft < thisBelow && thisLeft < thisRight && velocity.x >= 0) {
 			this->position.x = obj->position.x - this->size.x;
 			return LEFT;
-		}	else if(thisRight <= thisAbove && thisRight <= thisBelow && thisRight <= thisLeft)	{
+		} else if(thisRight < thisAbove && thisRight < thisBelow && thisRight < thisLeft && velocity.x <= 0) {
 			this->position.x = obj->position.x + obj->size.x;
 			return RIGHT;
 		} else {
@@ -108,7 +113,7 @@ void Player::collide(const std::shared_ptr<GameObject>& obj)
 	}
 	else
 	{
-		int action = repelFrom(obj);
+		int action = repelFrom(obj, velocity);
 		try {
 			Enemy& en = dynamic_cast<Enemy&>(*obj);
 			if(action == UP) {
@@ -293,7 +298,7 @@ void Enemy::collide(const std::shared_ptr<GameObject>& obj)
 	}
 	else
 	{
-		int action = repelFrom(obj);
+		int action = repelFrom(obj, velocity);
 		if(action == UP) {
 			isResting = true;
 			velocity.y = 0;
