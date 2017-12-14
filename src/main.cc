@@ -70,6 +70,7 @@ GLFWwindow* init_glefw()
 }
 
 vector<shared_ptr<GameObject>> objects;
+bool pComp(const shared_ptr<GameObject>& a, const shared_ptr<GameObject>& b) { return *a < *b; }
 
 int main(int argc, char* argv[])
 {
@@ -226,7 +227,7 @@ int main(int argc, char* argv[])
 				obj->run(deltaTime);
 		}
 
-		sort(objects.begin(), objects.end());
+		sort(objects.begin(), objects.end(), pComp);
 		for(shared_ptr<GameObject>& obj : objects)
 		{
 			glm::mat4 model = obj->modelMatrix();
