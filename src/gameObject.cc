@@ -50,22 +50,27 @@ actions GameObject::repelFrom(const std::shared_ptr<GameObject>& obj, glm::vec2 
 		Coin& c = dynamic_cast<Coin&>(*obj);
 		return COIN;
 	}
-	catch(const std::bad_cast& e) {
-		if(thisAbove < thisBelow && thisAbove < thisRight && thisAbove < thisLeft) {
-			this->position.y = obj->position.y - this->size.y + 1;
-			return UP;
-		} else if (thisBelow < thisAbove && thisBelow < thisRight && thisBelow < thisLeft) {
-			this->position.y = obj->position.y + obj->size.y;
-			return DOWN;
-		} else if(thisLeft < thisAbove && thisLeft < thisBelow && thisLeft < thisRight && velocity.x >= 0) {
-			this->position.x = obj->position.x - this->size.x;
-			return LEFT;
-		} else if(thisRight < thisAbove && thisRight < thisBelow && thisRight < thisLeft && velocity.x <= 0) {
-			this->position.x = obj->position.x + obj->size.x;
-			return RIGHT;
-		} else {
-			return NONE;
-		}
+	catch(const std::bad_cast& e) {}
+	try {
+		Mushroom& m = dynamic_cast<Mushroom&>(*obj);
+		return MUSHROOM;
+	}
+	catch(const std::bad_cast& e) {}
+
+	if(thisAbove < thisBelow && thisAbove < thisRight && thisAbove < thisLeft) {
+		this->position.y = obj->position.y - this->size.y + 1;
+		return UP;
+	} else if (thisBelow < thisAbove && thisBelow < thisRight && thisBelow < thisLeft) {
+		this->position.y = obj->position.y + obj->size.y;
+		return DOWN;
+	} else if(thisLeft < thisAbove && thisLeft < thisBelow && thisLeft < thisRight && velocity.x >= 0) {
+		this->position.x = obj->position.x - this->size.x;
+		return LEFT;
+	} else if(thisRight < thisAbove && thisRight < thisBelow && thisRight < thisLeft && velocity.x <= 0) {
+		this->position.x = obj->position.x + obj->size.x;
+		return RIGHT;
+	} else {
+		return NONE;
 	}
 }
 
@@ -102,13 +107,55 @@ void Entity::checkForCollisions()
 		collide(nullptr);
 }
 
+void Player::changePowerUpState(int change)
+{
+	int oldState = powerUpState;
+
+	if (change == 0)
+		powerUpState = 0;
+	else
+		powerUpState += change;
+
+	if (powerUpState < 0)
+	{
+		die();
+		return;
+	}
+
+	if (powerUpState == 0)
+	{
+		size.y = 16;
+		position.y += 16;
+		textureId = 1;
+		return;
+	}
+
+	if (oldState < 1)
+	{
+		size.y = 32;
+		position.y -= 16;
+	}
+
+	if (powerUpState == 1)
+	{
+		textureId = 0;
+	}
+}
+
+void Player::die()
+{
+	timer = 0;
+	velocity.x = 0;
+	velocity.y -= 400;
+}
+
 void Player::collide(const std::shared_ptr<GameObject>& obj)
 {
 	if(obj == nullptr)
 	{
 		isResting = false;
 	}
-	else
+	else if (powerUpState >= 0)
 	{
 		int action = repelFrom(obj, velocity);
 		try {
@@ -118,7 +165,7 @@ void Player::collide(const std::shared_ptr<GameObject>& obj)
 				velocity.y = -enemyBounce;
 				en.die();
 			} else {
-				//die
+				changePowerUpState(-1);
 			}
 		}
 		catch(const std::bad_cast& e) {
@@ -133,6 +180,10 @@ void Player::collide(const std::shared_ptr<GameObject>& obj)
 			} else if(action == COIN){
 				Coin& c = dynamic_cast<Coin&>(*obj);
 				c.die();
+			} else if(action == MUSHROOM){
+				Mushroom& m = dynamic_cast<Mushroom&>(*obj);
+				m.die();
+				changePowerUpState(1);
 			}
 		}
 	}
@@ -147,10 +198,21 @@ void Player::run(double deltaTime)
 		move = LEFT;
 	updatePosition(deltaTime, move);
 	animate(deltaTime);
+	
+	if (position.y >= 240)
+	{
+		
+	}
 }
 
 void Player::animate(double deltaTime)
 {
+	if (powerUpState < 0)
+	{
+		frameId = 13;
+		return;
+	}
+
 	if (frameId < 0)
 		frameId = -frameId - 1;
 	
@@ -200,56 +262,59 @@ void Player::updatePosition(double deltaTime, int move)
 {
 	float dt = static_cast<float>(deltaTime);
 
-	if (move == LEFT)
+	if (powerUpState >= 0)
 	{
-		if((pressed.run && velocity.x > -maxXRunVelocity) || (!pressed.run && velocity.x > -maxXVelocity))
+		if (move == LEFT)
 		{
-			if(velocity.x > 0){
-				velocity.x /= friction;
+			if((pressed.run && velocity.x > -maxXRunVelocity) || (!pressed.run && velocity.x > -maxXVelocity))
+			{
+				if(velocity.x > 0){
+					velocity.x /= friction;
+				}
+				velocity.x -= horizAccel * dt;
 			}
-			velocity.x -= horizAccel * dt;
 		}
-	}
-	else if (move == RIGHT)
-	{
-		if((pressed.run && velocity.x < maxXRunVelocity) || (!pressed.run && velocity.x < maxXVelocity))
+		else if (move == RIGHT)
 		{
-			if(velocity.x < 0){
-				velocity.x /= friction;
+			if((pressed.run && velocity.x < maxXRunVelocity) || (!pressed.run && velocity.x < maxXVelocity))
+			{
+				if(velocity.x < 0){
+					velocity.x /= friction;
+				}
+				velocity.x += horizAccel * dt;
 			}
-			velocity.x += horizAccel * dt;
 		}
-	}
-	else //No movement
-	{
-		velocity.x /= friction;
-	}
-
-	if (!isJumping)
-	{
-		if (velocity.x > 0.1f)
-			facingLeft = false;
-		else if (velocity.x < -0.1f)
-			facingLeft = true;
-	}
-
-	//Jumping
-	if (!pressed.jump){
-		heldJump = false;
-	}
-	else {
-		if(isResting) {
-			heldJump = true;
-			isResting = false;
-			isJumping = true;
-			velocity.y = -jumpVelocity;
+		else //No movement
+		{
+			velocity.x /= friction;
 		}
-		else if (heldJump && -velocity.y < maxJumpVelocity) {
-			//std::cout << velocity.y << std::endl;
-			velocity.y -= jumpHoldBoost;
+
+		if (!isJumping)
+		{
+			if (velocity.x > 0.1f)
+				facingLeft = false;
+			else if (velocity.x < -0.1f)
+				facingLeft = true;
+		}
+
+		//Jumping
+		if (!pressed.jump){
+			heldJump = false;
 		}
 		else {
-			heldJump = false;
+			if(isResting) {
+				heldJump = true;
+				isResting = false;
+				isJumping = true;
+				velocity.y = -jumpVelocity;
+			}
+			else if (heldJump && -velocity.y < maxJumpVelocity) {
+				//std::cout << velocity.y << std::endl;
+				velocity.y -= jumpHoldBoost;
+			}
+			else {
+				heldJump = false;
+			}
 		}
 	}
 
@@ -263,7 +328,7 @@ void Player::updatePosition(double deltaTime, int move)
 
 void Enemy::run(double deltaTime)
 {
-	if(isDead && timer > 80.0f) {
+	if(position.y >= 240 || (isDead && timer > 80.0f)) {
 		//remove the enemy from objects
 		for (unsigned int i = 0; i < objects.size(); i++) {
 			if(objects[i].get() == this) {
@@ -357,4 +422,68 @@ void Coin::animate(double deltaTime)
 	{
 		frameId = -frameId + 4;
 	}
+}
+
+void Mushroom::run(double deltaTime)
+{
+	if(position.y >= 240 || isDead) {
+		//remove the enemy from objects
+		for (unsigned int i = 0; i < objects.size(); i++) {
+			if(objects[i].get() == this) {
+				objects.erase(objects.begin() + i);
+				break;
+			}
+		}
+	}
+	else if (!isDead) {
+		updatePosition(deltaTime, direction);
+	}
+}
+
+void Mushroom::collide(const std::shared_ptr<GameObject>& obj)
+{
+	if(obj == nullptr)
+	{
+		isResting = false;
+	}
+	else
+	{
+		int action = repelFrom(obj, velocity);
+		if(action == UP) {
+			isResting = true;
+			velocity.y = 0;
+		} else if (action == DOWN) {
+			velocity.y = 0;
+		} else if (action == LEFT || action == RIGHT) {
+			direction = (direction == LEFT) ? RIGHT : LEFT;
+		}
+	}
+}
+
+void Mushroom::die()
+{
+	if(!isDead)
+		isDead = true;	
+}
+
+void Mushroom::animate(double deltaTime)
+{
+	
+}
+
+void Mushroom::updatePosition(double deltaTime, int move)
+{
+	float dt = static_cast<float>(deltaTime);
+	if (move == LEFT)
+	{
+		velocity.x = -movespeed;
+	}
+	else if (move == RIGHT)
+	{
+		velocity.x = movespeed;
+	}
+
+	calcGravity(deltaTime);
+	position += velocity * dt;
+	checkForCollisions();
 }

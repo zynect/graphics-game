@@ -22,7 +22,8 @@ enum actions {
 	RIGHT,
 	UP,
 	DOWN,
-	COIN
+	COIN,
+	MUSHROOM
 };
 
 extern struct Actions {
@@ -102,12 +103,14 @@ public:
 	void run(double deltaTime);
 	void animate(double deltaTime);
 	void collide(const std::shared_ptr<GameObject>& obj);
-	void die() {}
+	void die();
 
 private:
 	void updatePosition(double deltaTime, int move);
+	void changePowerUpState(int change);
 	bool heldJump = false;
 	bool isJumping = false;
+	int powerUpState = 0;
 };
 
 class Enemy : public Entity {
@@ -139,6 +142,22 @@ public:
 private:
 	bool isDead = false;
 	void updatePosition(double deltaTime, int move) {}
+};
+
+class Mushroom : public Entity {
+public: 
+	Mushroom() = delete;
+	Mushroom(glm::vec2 pos, unsigned int z, glm::vec2 s, unsigned int id, float a = 0.0f) : Entity(pos, z, s, id, a) {}
+	void run(double deltaTime);
+	void animate(double deltaTime);
+	void collide(const std::shared_ptr<GameObject>& obj);
+	void die();
+
+private:
+	int movespeed = 40;
+	int direction = RIGHT;
+	bool isDead = false;
+	void updatePosition(double deltaTime, int move);
 };
 
 #endif

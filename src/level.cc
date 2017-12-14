@@ -49,6 +49,10 @@ void readInLevel (const std::string& level){
             stream >> x >> y >> w >> h;
             objects.push_back(std::make_shared<Coin>(glm::vec2(x + 2, y), 0, glm::vec2(w, h), 4));
           }
+          else if(name == 'M'){
+            stream >> x >> y >> w;
+            objects.push_back(std::make_shared<Mushroom>(glm::vec2(x, y), 0, glm::vec2(w, h), 5));
+          }
       }
   }
 }
