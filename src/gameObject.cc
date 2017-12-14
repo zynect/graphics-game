@@ -157,33 +157,39 @@ void Player::collide(const std::shared_ptr<GameObject>& obj)
 	}
 	else if (powerUpState >= 0)
 	{
-		int action = repelFrom(obj, velocity);
 		try {
-			Enemy& en = dynamic_cast<Enemy&>(*obj);
-			if(action == UP) {
-				isJumping = true;
-				velocity.y = -enemyBounce;
-				en.die();
-			} else {
-				changePowerUpState(-1);
-			}
+			Background& b = dynamic_cast<Background&>(*obj);
+			isResting = false;
 		}
-		catch(const std::bad_cast& e) {
-			if(action == UP) {
-				isResting = true;
-				velocity.y = 0;
-			} else if(action == DOWN) {
-				velocity.y = 0;
-				heldJump = false;
-			} else if(action == LEFT || action == RIGHT){
-				velocity.x = 0;
-			} else if(action == COIN){
-				Coin& c = dynamic_cast<Coin&>(*obj);
-				c.die();
-			} else if(action == MUSHROOM){
-				Mushroom& m = dynamic_cast<Mushroom&>(*obj);
-				m.die();
-				changePowerUpState(1);
+		catch(const std::bad_cast& e) { 
+			int action = repelFrom(obj, velocity);
+			try {
+				Enemy& en = dynamic_cast<Enemy&>(*obj);
+				if(action == UP) {
+					isJumping = true;
+					velocity.y = -enemyBounce;
+					en.die();
+				} else {
+					changePowerUpState(-1);
+				}
+			}
+			catch(const std::bad_cast& e) {
+				if(action == UP) {
+					isResting = true;
+					velocity.y = 0;
+				} else if(action == DOWN) {
+					velocity.y = 0;
+					heldJump = false;
+				} else if(action == LEFT || action == RIGHT){
+					velocity.x = 0;
+				} else if(action == COIN){
+					Coin& c = dynamic_cast<Coin&>(*obj);
+					c.die();
+				} else if(action == MUSHROOM){
+					Mushroom& m = dynamic_cast<Mushroom&>(*obj);
+					m.die();
+					changePowerUpState(1);
+				}
 			}
 		}
 	}
@@ -215,7 +221,7 @@ void Player::animate(double deltaTime)
 
 	if (frameId < 0)
 		frameId = -frameId - 1;
-	
+
 	if (isJumping)
 	{
 		frameId = 5;
@@ -403,21 +409,16 @@ void Coin::run(double deltaTime)
 	animate(deltaTime);
 }
 
-void Coin::collide(const std::shared_ptr<GameObject>& obj)
-{
-
-}
-
 void Coin::die()
 {
 	if(!isDead)
-		isDead = true;	
+		isDead = true;
 }
 
 void Coin::animate(double deltaTime)
 {
 	frameId = std::floor(flashTimer);
-	
+
 	if (frameId > 2)
 	{
 		frameId = -frameId + 4;
