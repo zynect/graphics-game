@@ -4,6 +4,7 @@
 #include "gameObject.h"
 
 struct Actions pressed;
+float flashTimer = 0;
 
 glm::mat4 GameObject::modelMatrix()
 {
@@ -189,11 +190,8 @@ void Enemy::animate(double deltaTime)
 	if (timer > 50.0f)
 	{
 		timer -= 50.0f;
-		frameId++;
+		frameId = -frameId - 1;
 	}
-
-	if (frameId > 1)
-		frameId = 0;
 }
 
 void Player::updatePosition(double deltaTime, int move)
@@ -335,6 +333,7 @@ void Coin::run(double deltaTime)
 			}
 		}
 	}
+	animate(deltaTime);
 }
 
 void Coin::collide(const std::shared_ptr<GameObject>& obj)
@@ -346,4 +345,14 @@ void Coin::die()
 {
 	if(!isDead)
 		isDead = true;	
+}
+
+void Coin::animate(double deltaTime)
+{
+	frameId = std::floor(flashTimer);
+	
+	if (frameId > 2)
+	{
+		frameId = -frameId + 4;
+	}
 }

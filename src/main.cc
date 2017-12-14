@@ -205,6 +205,10 @@ int main(int argc, char* argv[])
 		deltaTime = currentTime - lastTime;
 		lastTime = currentTime;
 
+		flashTimer += deltaTime * 7.f;
+		if (flashTimer > 5)
+			flashTimer -= 5;
+
 		gui.updateLoop();
 
 		// Use our program.

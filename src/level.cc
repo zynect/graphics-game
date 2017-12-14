@@ -35,19 +35,19 @@ void readInLevel (const std::string& level){
       {
           if(name == 'P'){
             stream >> x >> y >> w >> h;
-            objects.push_back(std::make_shared<Player>(glm::vec2(x, y), 0, glm::vec2(w, h), 0));
+            objects.push_back(std::make_shared<Player>(glm::vec2(x, y), 0, glm::vec2(w, h), 1));
           }
           else if(name == 'E'){
             stream >> x >> y >> w;
-            objects.push_back(std::make_shared<Enemy>(glm::vec2(x, y), 0, glm::vec2(w, w), 1));
+            objects.push_back(std::make_shared<Enemy>(glm::vec2(x, y), 0, glm::vec2(w, w), 2));
           }
           else if(name == 'F'){
             stream >> x >> y >> w;
-            objects.push_back(std::make_shared<Platform>(glm::vec2(x, y), 0, glm::vec2(w, w), 2));
+            objects.push_back(std::make_shared<Platform>(glm::vec2(x, y), 0, glm::vec2(w, w), 3));
           }
           else if(name == 'C'){
-            stream >> x >> y >> w;
-            objects.push_back(std::make_shared<Coin>(glm::vec2(x + 2, y), 0, glm::vec2(12, w), 3));
+            stream >> x >> y >> w >> h;
+            objects.push_back(std::make_shared<Coin>(glm::vec2(x + 2, y), 0, glm::vec2(w, h), 4));
           }
       }
   }
