@@ -110,29 +110,35 @@ void Player::collide(const std::shared_ptr<GameObject>& obj)
 	}
 	else
 	{
-		int action = repelFrom(obj, velocity);
 		try {
-			Enemy& en = dynamic_cast<Enemy&>(*obj);
-			if(action == UP) {
-				isJumping = true;
-				velocity.y = -enemyBounce;
-				en.die();
-			} else {
-				//die
-			}
+			Background& b = dynamic_cast<Background&>(*obj);
+			isResting = false;
 		}
-		catch(const std::bad_cast& e) {
-			if(action == UP) {
-				isResting = true;
-				velocity.y = 0;
-			} else if(action == DOWN) {
-				velocity.y = 0;
-				heldJump = false;
-			} else if(action == LEFT || action == RIGHT){
-				velocity.x = 0;
-			} else if(action == COIN){
-				Coin& c = dynamic_cast<Coin&>(*obj);
-				c.die();
+		catch(const std::bad_cast& e) { 
+			int action = repelFrom(obj, velocity);
+			try {
+				Enemy& en = dynamic_cast<Enemy&>(*obj);
+				if(action == UP) {
+					isJumping = true;
+					velocity.y = -enemyBounce;
+					en.die();
+				} else {
+					//die
+				}
+			}
+			catch(const std::bad_cast& e) {
+				if(action == UP) {
+					isResting = true;
+					velocity.y = 0;
+				} else if(action == DOWN) {
+					velocity.y = 0;
+					heldJump = false;
+				} else if(action == LEFT || action == RIGHT){
+					velocity.x = 0;
+				} else if(action == COIN){
+					Coin& c = dynamic_cast<Coin&>(*obj);
+					c.die();
+				}
 			}
 		}
 	}

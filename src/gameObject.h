@@ -74,6 +74,16 @@ public:
 	void collide(const std::shared_ptr<GameObject>& obj) {}
 };
 
+class Background : public GameObject {
+public:
+	Background() = delete;
+	Background(glm::vec2 pos, unsigned int z, glm::vec2 s, unsigned int id, float a = 0.0f) : GameObject(pos, z, s, id, a) {}
+	void run(double deltaTime) {}
+	void collide(const std::shared_ptr<GameObject>& obj) {}
+	bool checkCollision(const std::shared_ptr<GameObject>& obj) {}
+	actions repelFrom(const std::shared_ptr<GameObject>& obj, glm::vec2 velocity) {}
+};
+
 class Entity : public GameObject {
 public:
 	Entity() = delete;
