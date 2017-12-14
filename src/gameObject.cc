@@ -153,7 +153,7 @@ void Player::animate(double deltaTime)
 {
 	if (frameId < 0)
 		frameId = -frameId - 1;
-	
+
 	if (isJumping)
 	{
 		frameId = 5;
@@ -338,21 +338,16 @@ void Coin::run(double deltaTime)
 	animate(deltaTime);
 }
 
-void Coin::collide(const std::shared_ptr<GameObject>& obj)
-{
-
-}
-
 void Coin::die()
 {
 	if(!isDead)
-		isDead = true;	
+		isDead = true;
 }
 
 void Coin::animate(double deltaTime)
 {
 	frameId = std::floor(flashTimer);
-	
+
 	if (frameId > 2)
 	{
 		frameId = -frameId + 4;
