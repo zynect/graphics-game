@@ -26,6 +26,7 @@ public:
 	MatrixPointers getMatrixPointers() const;
 	void updateLoop();
 	void scaleGame(float scale);
+	bool isGameRunning() { return gameRunning; };
 
 	static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 	static void MousePosCallback(GLFWwindow* window, double mouse_x, double mouse_y);
@@ -64,6 +65,8 @@ private:
 	glm::mat4 model_matrix_ = glm::mat4(1.0f);
 
 	float gameScale = 1.0f;
+
+	bool gameRunning = false;
 };
 
 #endif

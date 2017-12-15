@@ -79,6 +79,12 @@ void GUI::keyCallback(int key, int scancode, int action, int mods)
 			pressed.run = true;
 		}
 	}
+
+	if(key == GLFW_KEY_ENTER){
+		if(action == GLFW_PRESS) {
+			gameRunning = !gameRunning;
+		}
+	}
 }
 
 void GUI::mousePosCallback(double mouse_x, double mouse_y)

@@ -223,7 +223,7 @@ int main(int argc, char* argv[])
 
 		for(shared_ptr<GameObject> obj : objects)
 		{
-			if(obj != nullptr)
+			if(gui.isGameRunning() && obj != nullptr)
 				obj->run(deltaTime);
 		}
 
