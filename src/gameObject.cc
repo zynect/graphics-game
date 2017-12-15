@@ -87,6 +87,16 @@ actions GameObject::repelFrom(const std::shared_ptr<GameObject>& obj, glm::vec2 
 	return action;
 }
 
+void GameObject::destroy()
+{
+	for (unsigned int i = 0; i < objects.size(); i++) {
+		if(objects[i].get() == this) {
+			objects.erase(objects.begin() + i);
+			break;
+		}
+	}
+}
+
 void Entity::calcGravity(double deltaTime)
 {
 	float dt = static_cast<float>(deltaTime);
@@ -226,7 +236,7 @@ void Player::run(double deltaTime)
 	
 	if (position.y >= 240)
 	{
-		
+		destroy();
 	}
 }
 
@@ -364,13 +374,7 @@ void Player::updatePosition(double deltaTime, int move)
 void Enemy::run(double deltaTime)
 {
 	if(position.y >= 240 || (isDead && timer > 80.0f)) {
-		//remove the enemy from objects
-		for (unsigned int i = 0; i < objects.size(); i++) {
-			if(objects[i].get() == this) {
-				objects.erase(objects.begin() + i);
-				break;
-			}
-		}
+		destroy();
 	}
 	else if (!isDead) {
 		updatePosition(deltaTime, direction);
@@ -433,12 +437,7 @@ void Coin::run(double deltaTime)
 {
 	if(isDead)
 	{
-		for (unsigned int i = 0; i < objects.size(); i++) {
-			if(objects[i].get() == this) {
-				objects.erase(objects.begin() + i);
-				break;
-			}
-		}
+		destroy();
 	}
 	animate(deltaTime);
 }
@@ -462,13 +461,7 @@ void Coin::animate(double deltaTime)
 void Mushroom::run(double deltaTime)
 {
 	if(position.y >= 240 || isDead) {
-		//remove the enemy from objects
-		for (unsigned int i = 0; i < objects.size(); i++) {
-			if(objects[i].get() == this) {
-				objects.erase(objects.begin() + i);
-				break;
-			}
-		}
+		destroy();
 	}
 	else if (!isDead) {
 		updatePosition(deltaTime, direction);

@@ -46,6 +46,7 @@ public:
 	bool checkCollision(const std::shared_ptr<GameObject>& obj);
 	actions repelFrom(const std::shared_ptr<GameObject>& obj, glm::vec2 velocity);
 	actions testCollision(const std::shared_ptr<GameObject>& obj, glm::vec2 velocity);
+	void destroy();
 	void getCurrentSprite(int& texture, int& frame)
 	{
 		texture = textureId;
