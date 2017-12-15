@@ -238,11 +238,12 @@ int main(int argc, char* argv[])
 			CHECK_GL_ERROR(glBindBuffer(GL_ARRAY_BUFFER, g_buffer_objects[kGeometryVao][kUVBuffer]));
 			int textureId;
 			int frameId;
-			obj->getCurrentSprite(textureId, frameId);
+			bool visible;
+			obj->getCurrentSprite(textureId, frameId, visible);
 
 			std::vector<glm::vec2> spriteFrame;
 
-			if (frameId != 0)
+			if (visible)
 			{
 				if (frameId > 0)
 				{

@@ -251,11 +251,7 @@ void Player::animate(double deltaTime)
 	if (invincibleTimer > 0)
 	{
 		invincibleTimer -= deltaTime;
-		if (frameId != 0)
-		{
-			frameId = 0;
-			return;
-		}
+		visible = !visible;
 	}
 
 	if (frameId < 0)

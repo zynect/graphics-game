@@ -38,7 +38,7 @@ extern float flashTimer;
 class GameObject {
 public:
 	GameObject() = delete;
-	GameObject(glm::vec2 pos, unsigned int z, glm::vec2 s, unsigned int id, float a = 0.0f) : position(pos), size(s), angle(), textureId(id), zIndex(z), frameId(1), facingLeft(), timer() {};
+	GameObject(glm::vec2 pos, unsigned int z, glm::vec2 s, unsigned int id, float a = 0.0f) : position(pos), size(s), angle(), textureId(id), zIndex(z), frameId(1), facingLeft(), timer(), visible(true) {};
 	~GameObject() {};
 	virtual void run(double deltaTime) = 0;
 	virtual void collide(const std::shared_ptr<GameObject>& obj) = 0;
@@ -47,10 +47,11 @@ public:
 	actions repelFrom(const std::shared_ptr<GameObject>& obj, glm::vec2 velocity);
 	actions testCollision(const std::shared_ptr<GameObject>& obj, glm::vec2 velocity);
 	void destroy();
-	void getCurrentSprite(int& texture, int& frame)
+	void getCurrentSprite(int& texture, int& frame, bool& vis)
 	{
 		texture = textureId;
 		frame = frameId;
+		vis = visible;
 	};
 
 	bool operator < (const GameObject& obj) const;
@@ -65,6 +66,7 @@ protected:
 	float timer;
 	glm::vec2 size;
 	float angle;
+	bool visible;
 };
 
 extern std::vector<std::shared_ptr<GameObject>> objects;
